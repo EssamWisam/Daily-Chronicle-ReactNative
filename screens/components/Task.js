@@ -1,16 +1,20 @@
-import React from 'react';
+import { useState} from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { colors } from '../../assets/colors/colors';
+import * as Progress from 'react-native-progress';
+import {  ActionType, textDecorator } from '../../utils/taskSetup';
 
-export default Task = ({text}) => {
+
+export default Task = ({text, duration, index, TILMode}) => {
    const color = colors[0]
+
    return(
       <View style={[styles.item, {backgroundColor: color}]}>
          <View style={styles.itemLeft} >
-            <TouchableOpacity style={styles.circle}></TouchableOpacity>
-            <Text style={styles.itemText}>{text}</Text>
+            <ActionType index={index} />
+            <Text style={styles.itemText}>{(duration)?textDecorator(text):text}</Text>
          </View>
-         {/* <View style={styles.itemRight}></View> */}
+         <Progress.Pie progress={duration} size={25} color='#f2f3f4' style={{display: (TILMode)? 'none': 'flex'}}  />
       </View>
    )
 }
@@ -27,32 +31,36 @@ item: {
     marginBottom: 10,
     borderWidth: 2,
     borderColor: '#ededed',
-    marginTop: 0
+    marginTop: 0,
+    //minWidth: '100%',
+    //maxWidth: '100%'
 },
 itemLeft: {
    flexDirection: 'row',
     alignItems: 'center',
-    flexWrap: 'wrap'
+    flexWrap: 'wrap',
+    marginRight: 0
 }, 
 circle: {
    width: 24,
     height:24,
-    backgroundColor: '#f2f3f4',//'#55BCF6',
-    opacity: 0.9,
-    borderRadius: 20,
-    marginRight: 15
+    borderRadius: 50,
+    backgroundColor: '#f2f3f4',
+    opacity: 1.0,
+   
 },
 itemText: {
-   maxWidth: '90%',
+   maxWidth: '75%',
     fontFamily: 'Regular',
       fontSize: 15,
       color: '#f2f3f4',
 },
 itemRight: {
-   width: 12,
-    height: 12,
-    borderColor: '#55BCF6',
-    borderWidth: 2,
-    borderRadius: 5
+    width: 24,
+    height: 24,
+    color: '#f2f3f4',
+    marginRight: 15,
+    marginLeft: 10
+
 },
 });

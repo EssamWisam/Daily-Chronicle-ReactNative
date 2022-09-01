@@ -1,92 +1,102 @@
-import { useState, useEffect, useRef } from 'react';
-import { StyleSheet, Text, View, ScrollView } from 'react-native';
+import { useState, useEffect, useRef, useMemo } from 'react';
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Keyboard } from 'react-native';
 import CalendarPicker from 'react-native-calendar-picker';
+import { convertDate, getDay } from '../utils/taskSetup';
 import { colors } from '../assets/colors/colors';
 import Right from '../assets/right.svg'
 import Left from '../assets/left.svg'
 import { StatusBar } from 'expo-status-bar';
 import NoteView from './components/NoteView';
 import useKeyboardOpen from '../utils/keyboard';
+import Ham from '../assets/Ham.svg';
+import ThickLeft from '../assets/thickleft.svg';
+import Light from '../assets/light.svg';
 
 export default HomeScreen = () => {
   const color = colors[0]
-  var now = new Date();
-  var start = new Date(now.getFullYear(), 0, 0);
-  var diff = (now - start) + ((start.getTimezoneOffset() - now.getTimezoneOffset()) * 60 * 1000);
-  var day = Math.floor((diff) / (1000 * 60 * 60 * 24));
+  let now = new Date();
 
-  [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState(new Date());
   const [allTasks, setAllTasks] = useState({});
 
   const isKeyboardOpen = useKeyboardOpen();
+  const [fullscreen, setFullscreen] = useState(false);
 
-  //convert date to string with format day and month name
-  const convertDate = (dateString) => {
-    const date = new Date(dateString);
-    var day = date.getDate();
-    var month = date.getMonth();
-    var year = date.getFullYear();
-    var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-    if(day == 1 || day == 21 || day == 31)  day = day + 'st';
-    else if(day == 2 || day == 22)          day = day + 'nd';
-    else if(day == 3 || day == 23)          day = day + 'rd';
-    else                                    day = day + 'th';
-    return `${day} ${months[month]} ${year} `;
-  }
+  const [TILMode, setTILMode] = useState(false);
+
 
   const calendarRef = useRef();
   // print hello world when component mounts
   useEffect(() => {
     const date = new Date()
-    calendarRef.current.handleOnPressDay(date.getDate(), date.getMonth(), date.getFullYear())	
-  } , []);
+    calendarRef.current.handleOnPressDay(date.getDate(), date.getMonth(), date.getFullYear())
+  }, []);
 
   const dayStyleDecider = (date) => {
-    if(allTasks[date.toISOString()] && allTasks[date.toISOString()].length > 0) {
+    if (allTasks[date.toISOString()] && allTasks[date.toISOString()].length > 0) {
       return {
-        textStyle: {color: color, fontFamily: 'Bold'}, 
+        textStyle: { color: color, fontFamily: 'Bold' },
       }
     }
-    // if the chosen date is today, return the style for today
-   
+  
   }
+
+  const hideCalendar = useMemo(() => isKeyboardOpen || fullscreen, [isKeyboardOpen, fullscreen]);
+
 
   return (
     <View style={[styles.container, { backgroundColor: color }]}>
       <StatusBar style="light" />
-      <View style={[styles.header]}>
-        <View style={[styles.headerLeft]}>
-          <Text style={[styles.headerText, { color: 'white',}]}>
-            {(!isKeyboardOpen)? ("Good morning") : convertDate(selectedDate)}
+        <View style={[styles.header]}>
+          <View style={[styles.headerLeft]}>
+            {(!hideCalendar && !TILMode) ?
+              <TouchableOpacity>
+                <Ham width={35} height={35} style={[styles.ham, { color: 'white' }]}></Ham>
+              </TouchableOpacity> :
+              (!TILMode) ?
+              <TouchableOpacity onPress={() => { setFullscreen(false); Keyboard.dismiss() }}>
+                <ThickLeft width={20} height={20} style={[styles.left, { color: 'white' }]}></ThickLeft>
+              </TouchableOpacity>:
+               null
+              }
+            <Text style={[styles.headerText, { color: 'white', }]}>
+              {(!hideCalendar && !TILMode) ? ("Good morning") : (!TILMode)? convertDate(selectedDate): "Self-Improvement"}
+            </Text>
+          </View>
+          <View style={[styles.headerRight]}>
+            <TouchableOpacity onPress={()=>setTILMode(!TILMode)}>
+              <Text  style={[styles.headerText, { color: 'white', }]}>✴</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+        <View style={[styles.instr]}>
+          <Text style={[styles.instrText]}> 
+          {(!TILMode)?
+           (<Text><Text style={{ color: 'white', fontFamily: 'SemiBold' }}>{365 - getDay()} days</Text> left until 2023</Text>):
+           (null)}
           </Text>
         </View>
-        <View style={[styles.headerRight]}>
-          <Text style={[styles.headerText, { color: 'white',  }]}>✴</Text>
+        <View style={[styles.calendarWrapper, { display: (hideCalendar || TILMode) ? 'none' : 'flex' }]}>
+          <CalendarPicker
+            previousComponent={<Left width={24} height={24} style={{ color: 'black' }} ></Left>}
+            nextComponent={<Right width={24} height={24} style={{ color: 'black' }} ></Right>}
+            textStyle={{ fontFamily: 'SemiBold', color: 'black', fontSize: 14 }}
+            monthTitleStyle={{ fontFamily: 'Bold', color: color, fontSize: 16 }}
+            yearTitleStyle={{ fontFamily: 'Bold', color: 'black', fontSize: 16 }}
+            selectedDayStyle={{ backgroundColor: color, borderWidth: 3, borderColor: color, fontSize: 16, shadowColor: color }}
+            selectedDayTextStyle={{ fontFamily: 'Bold', color: 'white' }}
+            dayLabelsWrapper={{ borderBottomColor: color + "99", borderTopColor: color + "99", borderBottomWidth: 0, borderTopWidth: 0 }}
+            maxDate={now}
+            minDate={new Date(Date.now() - 24 * 3600 * 1000 * 365 * 99)}
+            onDateChange={(date) => { setSelectedDate(date); }}
+            customDatesStyles={(date) => dayStyleDecider(date)}
+            todayBackgroundColor={color + "a4"}
+            ref={calendarRef}
+          />
         </View>
+        <NoteView selectedDate={selectedDate.toISOString()} setAllTasks={setAllTasks} allTasks={allTasks} hideCalendar={hideCalendar} setFullscreen={setFullscreen} TILMode={TILMode}/>
       </View>
-      <View style={[styles.instr]}>
-        <Text style={[styles.instrText]}> <Text style={{color: 'white', fontFamily: 'SemiBold'}}>{365 - day} days</Text> left until 2023</Text>
-      </View>
-       <View style={[styles.calendarWrapper,{display: (isKeyboardOpen)? 'none': 'flex'} ]}>
-        <CalendarPicker
-          previousComponent={<Left width={24} height={24} style={{ color: 'black' }} ></Left>}
-          nextComponent={<Right width={24} height={24} style={{ color: 'black' }} ></Right>}
-          textStyle={{ fontFamily: 'SemiBold', color: 'black', fontSize: 14 }}
-          monthTitleStyle={{ fontFamily: 'Bold', color: color, fontSize: 16 }}
-          yearTitleStyle={{ fontFamily: 'Bold', color: 'black', fontSize: 16 }}
-          selectedDayStyle={{ backgroundColor: color, borderWidth: 3, borderColor: color, fontSize: 16, elevation: 100, shadowColor: color }}
-          selectedDayTextStyle={{ fontFamily: 'Bold', color: 'white' }}
-          dayLabelsWrapper={{ borderBottomColor: color + "99", borderTopColor: color + "99", borderBottomWidth: 0, borderTopWidth: 0 }}
-          maxDate={now}
-          minDate={new Date(Date.now() - 24 * 3600 * 1000 * 365 * 99)}
-          onDateChange={(date) => {setSelectedDate(date); }}
-          customDatesStyles	= {(date)=>dayStyleDecider(date)}
-          todayBackgroundColor={color + "a4"}
-          ref={calendarRef}
-        /> 
-      </View>
-      <NoteView selectedDate={selectedDate.toISOString()} setAllTasks={setAllTasks} allTasks={allTasks}/>
-    </View>
+
 
   );
 }
@@ -105,6 +115,11 @@ const styles = StyleSheet.create({
     marginBottom: -10
 
   },
+  memoir: {
+    flex: 1,
+    height: '100%',
+    width: '100%',
+  },
   header: {
     width: '100%',
     marginTop: '10%',
@@ -114,14 +129,14 @@ const styles = StyleSheet.create({
   },
   headerText: {
     fontFamily: 'SemiBold',
-    fontSize: 30,
-    paddingHorizontal: 14,
+    fontSize: 29,
+    paddingHorizontal: 10,
     textAlign: 'left'
   },
   instr: {
     width: '100%',
     marginTop: '0.5%',
-   
+
   },
   instrText: {
     fontFamily: 'Regular',
@@ -130,6 +145,27 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     color: '#ededed',
     opacity: 0.8
+  },
+  ham: {
+
+    marginLeft: 10,
+  },
+  left: {
+    marginLeft: 10,
+    marginBottom: 6
+  },
+  headerLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  improvement: {
+    width: '100%',
+    height: '100%',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+
+
   }
 
 });

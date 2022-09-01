@@ -14,6 +14,7 @@ import { PersistGate } from 'redux-persist/integration/react'
 import { store } from './redux/store';
 import { RootSiblingParent } from 'react-native-root-siblings';
 import { colors } from './assets/colors/colors';
+import PieScreen from './screens/PieScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -45,6 +46,7 @@ export default AppWrapper = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator>
+        <Stack.Screen name="Pie" component={PieScreen} options={{ headerShown: false }} />
       <Stack.Screen 
               options={{
                 headerShown: false,

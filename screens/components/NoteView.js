@@ -7,16 +7,37 @@ import { colors } from '../../assets/colors/colors';
 import Add from '../../assets/add.svg';
 import useKeyboardOpen from '../../utils/keyboard';
 import ScrollBar from 'react-native-colored-scrollbar';
+import { findDuration, findActionType } from '../../utils/taskSetup';
+import Up from '../../assets/Up.svg';
 
-export default NoteView = ({ selectedDate, allTasks, setAllTasks }) => {
+
+export default NoteView = ({ selectedDate, allTasks, setAllTasks, hideCalendar, setFullscreen, TILMode }) => {
   const color = colors[0]
   const [task, setTask] = useState();
   const [tasks, setTasks] = useState([]);
+  const [tips, setTips] = useState([]);
+  const [added, setAdded] = useState(false);    // state to make scroll bar go down upon adding task
+  const isKeyboardOpen = useKeyboardOpen();
 
   const handleAddTask = () => {
-    setTasks(tasks => [...tasks, task]);
+    if(task) {
+    if(!TILMode){
+    setTasks(tasks => [...tasks, {
+       text: task,
+       id: `${task}_${new Date().getMilliseconds()}`,
+       duration: findDuration(task),
+       action: findActionType(task)
+      }]);
+    }
+    else {
+      setTips(tips => [...tips, {
+        text: task,
+        id: `${task}_${new Date().getMilliseconds()}`,
+       }]);
+    }
     setTask('');
     setAdded(!added);   //just a change of state for useEffect
+    }
   }
 
   // Follows with handle task
@@ -30,53 +51,64 @@ export default NoteView = ({ selectedDate, allTasks, setAllTasks }) => {
     else setTasks([]);
   } , [selectedDate]);
 
+  const completeTask = (target) => {
+    if(!TILMode){
+    setTasks(tasks.filter((task, i) => task.id !== target));
+    }
+    else {
+      setTips(tips.filter((tip, i) => tip.id !== target));
+    }
 
-  const [added, setAdded] = useState(false);    // state to make scroll bar go down upon adding task
-
-  const isKeyboardOpen = useKeyboardOpen();
-
-  const completeTask = (index) => {
-    setTasks(tasks.filter((task, i) => i !== index));
     Vibration.vibrate(50);
   }
 
-  
-
-
   return (
-    <View style={[styles.container, (isKeyboardOpen) ? ({ borderTopRightRadius: 25, borderTopLeftRadius: 25, marginTop: 20, paddingTop: 10  }) : ({})]}>
-        {(!isKeyboardOpen)? <Text style={[styles.sectionTitle, {color: color}]}> Done That Day</Text>:null}
+    <View style={[styles.container, (hideCalendar) ? ({ borderTopRightRadius: 25, borderTopLeftRadius: 25, marginTop: 20, paddingTop: 10  }) : ({}), {backgroundColor: (TILMode)? color+'64': '#f2f3f4'}]}>
+        {(!hideCalendar && (tasks.length!==0))?
+         <View style={styles.up}><TouchableOpacity onPress={()=>setFullscreen(true)}><Up style={[styles.sectionTitle, {color: color}]}></Up></TouchableOpacity></View>
+         :
+         <View style={styles.up}><Text style={[styles.sectionTitleText, {display: (hideCalendar || TILMode)? 'none': 'flex'}]}>Start Logging Your Day!</Text></View>}
+      
       <ScrollBar style={styles.taskWrapper}
         indicatorBackground={'transparent'} timeBeforeFadeAway={1500} indicatorColor={color}
-         isKeyboardOpen={isKeyboardOpen}
+         isKeyboardOpen={hideCalendar}
          added={added}
          selectedDate={selectedDate}
       >
         <View style={styles.items} >
-          {allTasks[selectedDate]?.map((task, index) => {
+          {(!TILMode)? allTasks[selectedDate]?.map((task, index) => {
             return (
-              <Pressable key={index} style={({pressed})=>[{},{opacity:pressed ? 0.8 : 1}]} onLongPress={() => completeTask(index)}>
-               <Task text={task}/>
+              <Pressable key={task.id} style={({pressed})=>[{opacity:pressed ? 0.8 : 1}]} onLongPress={() => completeTask(task.id)}>
+               <Task text={task.text} duration={task.duration} index={task.action} TILMode={TILMode}/>
               </Pressable>
               )
           })
+        :
+        tips.map((tip, index) => {
+          return (
+            <Pressable key={tip.id} style={({pressed})=>[{opacity:pressed ? 0.8 : 1}]} onLongPress={() => completeTask(tip.id)}>
+             <Task text={tip.text} duration={0} index={-1} TILMode={TILMode}/>
+            </Pressable>
+            )
+        })
         }
         </View>
       </ScrollBar>
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.writeTaskWrapper}>
-        <TextInput style={[styles.input]} blurOnSubmit={false} placeholder={"What did you do?"}
+        <TextInput style={[styles.input, {backgroundColor: (TILMode)? '#f2f3f464': 'white'}, {borderColor: (TILMode)? '#f2f3f4':'#ededed'}, {color: (TILMode)? 'white':'black'}]} blurOnSubmit={false} 
+        placeholder={(!TILMode)?"What did you do?":"What's your next tip?"} placeholderTextColor={(TILMode)? '#f2f3f4':'#708090'}
           onChangeText={text => setTask(text)} value={task} onSubmitEditing={() => { handleAddTask() }} />
         <TouchableOpacity onPress={() => handleAddTask()}>
-          <View style={[styles.addButtonWrapper, { backgroundColor: color, shadowColor: color }]}>
-            <Add style={[styles.addText]} width='20' height='20'> Add ✍️ </Add>
+          <View style={[styles.addButtonWrapper, { backgroundColor: (TILMode)? 'white': color, shadowColor: color }]}>
+            <Add style={{color: (TILMode)? color: 'white'}} width='20' height='20'></Add>
           </View>
         </TouchableOpacity>
 
       </KeyboardAvoidingView>
 
-
     </View>
+   
   );
 }
 
@@ -87,19 +119,22 @@ const styles = StyleSheet.create({
 
   container: {
     flex: 1,
-    backgroundColor: '#f2f3f4',
   },
   taskWrapper: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 14,
     marginBottom: 150,
     borderColor: '000',
   },
   sectionTitle: {
-    fontSize: 14,
-    fontFamily: 'SemiBold',
-    color: '#808080',
     textAlign: 'center',
     marginTop: 9,
+  },
+  sectionTitleText: {
+    fontSize: 13,
+    fontFamily: 'SemiBold',
+    color: '#bababa',
+    textAlign: 'center',
+    marginTop: 18,
     letterSpacing: 3
   },
   sectionTitleWrapper: {
@@ -123,7 +158,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF',
     borderRadius: 60,
     borderWidth: 2,
-    borderColor: '#ededed',
     width: '70%',
     fontFamily: 'Regular',
   },
@@ -136,10 +170,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 0,
     borderColor: '#fff',
-    elevation: 10,
   },
   addText: {
-    fontFamily: 'SemiBold',
     color: 'white',
   },
+  up: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  }
 })
