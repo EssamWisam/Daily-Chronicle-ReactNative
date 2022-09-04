@@ -71,20 +71,21 @@ export const findActionType = (text) => {
          if (index == 14)  return <Watch width={24} height={24} style={styles.itemStyle}/>;
          if (index == -1)  return <Light width={24} height={24} style={styles.itemStyle}/>;
          else return <Bullet width={24} height={24} style={styles.itemStyle}/>;
-
       }
 
-
-const styles = StyleSheet.create({
-   itemStyle: {
-      width: 24,
-      height: 24,
-      color: '#f2f3f4',
-      marginRight: 13,
-      marginLeft: 13
-  },
- 
-   });
+   export const actions = ["Praying", "Relaxing", "Studying", "Games", "Sports", "Working", "Eating", "College", "Transport", "Chatting", "Cleaning", "Meetings", "Coding", "Research", "Watching", "Other",]
+   export const actionColors = ['#8082C5','#5A6BF5','#635E90','#9883DC', '#B97081', '#51e7C3', '#90A170', '#D2886C', '#996592', '#BaC558', '#5cc6b8', '#96DA6F', '#9C886C', '#EAE88E', '#968A80', '#7AC787', ]  
+   export const values = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+   const styles = StyleSheet.create({
+      itemStyle: {
+         width: 24,
+         height: 24,
+         color: '#f2f3f4',
+         marginRight: 13,
+         marginLeft: 13
+   },
+   
+      });
 
    export const findDuration = (text) => {
       if(!/\d/g.test(text))    return 0.0/12.0
@@ -144,7 +145,7 @@ const styles = StyleSheet.create({
    else if (day == 2 || day == 22) day = day + 'nd';
    else if (day == 3 || day == 23) day = day + 'rd';
    else day = day + 'th';
-   return `${day} ${months[month]} ${year} `;
+   return `${months[month]} ${day}, ${year} `;
  }
 export const getDay=()=>{
  var now = new Date();
