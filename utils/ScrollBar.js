@@ -1,8 +1,8 @@
 import React, {useState, useRef, useEffect} from 'react';
 import {ScrollView, View, Animated} from 'react-native';
 import PropTypes from 'prop-types';
-
-export default function ColoredScrollBar({
+// This is a modifed node module
+export default function ScrollBar({
   indicatorColor = '#CFD8DC',
   indicatorBackground = '#455A64',
   indicatorWidth = 6,
@@ -117,7 +117,7 @@ export default function ColoredScrollBar({
   );
 }
 
-ColoredScrollBar.propTypes = {
+ScrollBar.propTypes = {
   indicatorColor: PropTypes.string,
   indicatorBackground: PropTypes.string,
   innerWidth: PropTypes.number,

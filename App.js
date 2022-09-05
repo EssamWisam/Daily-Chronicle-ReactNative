@@ -1,30 +1,21 @@
 import 'react-native-gesture-handler';
 import { useState, useRef } from 'react';
-import { StatusBar } from 'expo-status-bar';
 import { useFonts } from 'expo-font';
-import { StyleSheet, Text, View, Pressable, TextInput, Vibration } from 'react-native';
+import {  Text, View, Pressable, TextInput, Vibration } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import HomeScreen from './screens/HomeScreen';
 import NoteView from './screens/components/NoteView';
-import LoginScreen from './screens/LoginScreen';
-import RegisterScreen from './screens/RegisterScreen';
-import ResetScreen from './screens/ResetScreen';
 import { Provider } from 'react-redux';
 import { persistor } from './redux/store';
 import { PersistGate } from 'redux-persist/integration/react'
 import { store } from './redux/store';
 import { RootSiblingParent } from 'react-native-root-siblings';
-import { colors } from './assets/colors/colors';
-import PieScreen from './screens/PieScreen';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import Diary from './assets/Diary.svg';
-import Note from './assets/Note.svg';
 import Paper from './assets/Paper.svg';
-import FilledPaper from './assets/FilledPaper.svg';
 import Paint from './assets/Paint.svg';
 import Notedown from './assets/Notedown.svg';
 import Add from './assets/add.svg';
-import Trash from './assets/Trash.svg';
 import { useDispatch, useSelector } from 'react-redux';
 import { SetTILMode } from './redux/slices/notes';
 import { SetColorMode } from './redux/slices/colors';
@@ -38,9 +29,8 @@ import {
 import RBSheet from "react-native-raw-bottom-sheet";
 import { Keyboard } from 'react-native';
 import { SetNotesGenre } from './redux/slices/notes';
-
-//import { LogBox } from "react-native"
-//LogBox.ignoreAllLogs(true)
+import { LogBox } from "react-native"
+LogBox.ignoreAllLogs(true)
 
 const Drawer = createDrawerNavigator();
 
@@ -89,7 +79,7 @@ function CustomDrawerContent(props) {
   return (
     <DrawerContentScrollView {...props}>
       <DrawerItem
-        label = {() => <Text style={{ color: 'white', fontFamily: 'Bold', fontSize: 30 }}>{"✵ Daily Chronicle"}</Text>}
+        label = {() => <Text style={{ color: 'white', fontFamily: 'Bold', fontSize: 35 }}>{"✵ Daily Chronicle"}</Text>}
       />
         <DrawerItem
         label = {() => <Text style={{ color: TILMode ? 'white': color, fontFamily: 'SemiBold', letterSpacing: 2 }}>{"Diary"}</Text>}
@@ -139,7 +129,7 @@ function CustomDrawerContent(props) {
         activeTintColor='white'
         onPress={()=> {setColorMode(true); props.navigation.closeDrawer();}}
       />
-      {/* <DrawerItemList {...props} /> Make all custom, GG*/ }
+      {/* <DrawerItemList {...props} /> Made all custom, GG*/ }
       <RBSheet
         ref={refRBSheet}
         closeOnDragDown={false}
@@ -221,23 +211,8 @@ function CustomDrawerContent(props) {
             />)
          }}
        component={NoteView} /> 
-       {/* <Stack.Screen options={{headerShown: false}} name="Login" component={LoginScreen} /> 
-       <Stack.Screen options={{headerShown: false}} name="Register" component={RegisterScreen} /> 
-       <Stack.Screen options={{headerShown: false}} name="Reset" component={ResetScreen} />  */}
       </Drawer.Navigator>
       
     </NavigationContainer> 
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-
-});
-
-// /Users/essam/Desktop/FirebaseAuth/node_modules

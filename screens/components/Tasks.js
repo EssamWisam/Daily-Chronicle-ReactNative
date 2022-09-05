@@ -1,32 +1,31 @@
-import { useState} from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
-import { colors } from '../../assets/colors/colors';
 import * as Progress from 'react-native-progress';
 import {  ActionType, textDecorator } from '../../utils/taskSetup';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { SetTips } from '../../redux/slices/notes';
 import Lang from '../../assets/Lang.svg'
 import Done from '../../assets/Done.svg'
-import Round from '../../assets/Round.svg'
-import Circle from '../../assets/Circle.svg'
 
 
-
-export default Task = ({text, duration, index}) => {
+export default Task = ({text, duration, index, id}) => {
    const color = useSelector(state => state.colors.color)['hex']
    const  TILMode  = useSelector(state => state.notes.TILMode)
    const notesGenre = useSelector(state => state.notes.notesGenre)
+   const dispatch = useDispatch();
+   const [tips, setTips] = [ useSelector(state => state.notes.tips), (payload) => dispatch(SetTips(payload))];
+
+   const completeTask = (target) => {
+        setTips(tips.filter((tip, i) => tip.id !== target));
+    }
    
-
-
    return(
-      <View style={[styles.item, {backgroundColor: color}]}>
+      <View style={[styles.item, {backgroundColor: color, paddingRight: (TILMode)? 5:15 }]}>
          <View style={styles.itemLeft} >
             {!TILMode && <ActionType index={index} />}
-            {(TILMode && notesGenre == 'Language Spice') && <Lang style={ styles.itemStyle} width={25} color='white' height={25} />}
-            {(TILMode && notesGenre == 'Todo') && <Done style={ styles.itemStyle} width={25} color='white' height={25} />}
+            {(TILMode && notesGenre == 'Language Spice') && <Lang style={ styles.itemStyle} width={22} color='white' height={22} />}
+            {(TILMode && notesGenre == 'Todo') && <Done onPress={()=>completeTask(id)} style={ styles.itemStyle} width={25} color='white' height={25} />}
             {(TILMode && notesGenre == 'Self-Improvement') && <ActionType index={index} />}
-
-            <Text style={styles.itemText}>{(duration)?textDecorator(text):text}</Text>
+            <Text style={[styles.itemText, {maxWidth: (TILMode)? (!(['Language Spice', 'Todo', 'Self-Improvement'].includes(notesGenre))?'100%':'85%'):'75%'}]}>{(duration)?textDecorator(text):text}</Text>
          </View>
          <Progress.Pie progress={duration} size={25} color='#f2f3f4' style={{display: (TILMode)? 'none': 'flex'}}  />
       </View>
@@ -36,7 +35,6 @@ export default Task = ({text, duration, index}) => {
 const styles = StyleSheet.create({
 
 item: {
-   //backgroundColor: '#FFF',
     padding: 15,
     borderRadius: 30,
     flexDirection: 'row',
@@ -46,15 +44,14 @@ item: {
     borderWidth: 2,
     borderColor: '#ededed',
     marginTop: 0,
-    //minWidth: '100%',
-    //maxWidth: '100%'
+    marginRight: -11,
+
 },
 itemLeft: {
    flexDirection: 'row',
     alignItems: 'center',
-    //flexWrap: 'wrap',
+    flexWrap: 'wrap',
     marginRight: 0,
-   minWidth: '100%',
 }, 
 circle: {
    width: 24,
@@ -65,7 +62,6 @@ circle: {
    
 },
 itemText: {
-   maxWidth: '75%',
     fontFamily: 'Regular',
       fontSize: 15,
       color: '#f2f3f4',

@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useMemo } from 'react';
 import { StyleSheet, Text, View, Modal, ScrollView, Pressable, TouchableOpacity, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import CalendarPicker from 'react-native-calendar-picker';
 import { convertDate, getDay } from '../utils/taskSetup';
-import { colors } from '../assets/colors/colors';
+import { getGreeting } from '../utils/taskSetup';
 import Right from '../assets/right.svg'
 import Left from '../assets/left.svg'
 import { StatusBar } from 'expo-status-bar';
@@ -11,7 +11,6 @@ import NoteView from './components/NoteView';
 import useKeyboardOpen from '../utils/keyboard';
 import Ham from '../assets/Ham.svg';
 import ThickLeft from '../assets/thickleft.svg';
-import Light from '../assets/light.svg';
 import PieScreen from './PieScreen';
 import Donut from '../assets/Donut.svg';
 import { BackHandler } from "react-native";
@@ -64,12 +63,15 @@ export default HomeScreen = () => {
 
   const navigation = useNavigation()
   function handleBackButtonClick() {
+    console.log(fullscreen)               // Doesn't work without this console.log
     if(fullscreen){
       setFullscreen(false);
-      inputRef.current.blur();
+      //inputRef.current.blur();
       return true;
     }
-    return false;
+    else {
+        return false;
+    }
     
   }
   
@@ -99,7 +101,7 @@ export default HomeScreen = () => {
                null
               }
             <Text style={[styles.headerText, { color: 'white', }]}>
-              {(!hideCalendar && !TILMode) ? ("Good morning") : (!TILMode)? convertDate(selectedDate): notesGenre}
+              {(!hideCalendar && !TILMode) ? (getGreeting()) : (!TILMode)? convertDate(selectedDate): notesGenre}
             </Text>
           </View>
           <View style={[styles.headerRight]}>

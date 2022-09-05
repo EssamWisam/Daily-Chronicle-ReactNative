@@ -154,3 +154,14 @@ export const getDay=()=>{
  var day = Math.floor((diff) / (1000 * 60 * 60 * 24));
    return day;
 }
+
+
+// function to return message based on time in the day
+export const getGreeting = () => {
+   const date = new Date();
+   const hour = date.getHours();
+   if (hour < 12) return 'Good Morning';
+   else if (hour < 18) return 'Good Afternoon';
+   else if (hour < 22)return 'Good Evening';
+   else return 'Good Night';
+}

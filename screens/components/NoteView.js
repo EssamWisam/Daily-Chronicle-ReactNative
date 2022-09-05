@@ -1,12 +1,10 @@
 import { Platform, StyleSheet, Text, View, KeyboardAvoidingView, Vibration, TextInput, TouchableOpacity, Pressable, Keyboard } from 'react-native';
 import { useState, useEffect, useRef } from 'react';
-import { useNavigation } from '@react-navigation/native';
-import { StatusBar } from 'expo-status-bar';
-import Task from './Task';
-import { colors } from '../../assets/colors/colors';
+
+import Task from './Tasks';
 import Add from '../../assets/add.svg';
 import useKeyboardOpen from '../../utils/keyboard';
-import ScrollBar from 'react-native-colored-scrollbar';
+import ScrollBar from '../../utils/ScrollBar';
 import { findDuration, findActionType } from '../../utils/taskSetup';
 import Up from '../../assets/Up.svg';
 import { useSelector, useDispatch } from 'react-redux';
@@ -36,7 +34,6 @@ export default NoteView = ({ selectedDate, hideCalendar, setFullscreen }) => {
 
   // get all tips with property genre = notesGenre
   const getTips = () => {
-    console.log(tips)
    return tips.filter((tip) => tip.genre == notesGenre)
   }
 
@@ -109,7 +106,7 @@ export default NoteView = ({ selectedDate, hideCalendar, setFullscreen }) => {
         <View style={[styles.items]} >
           {(!TILMode)? allTasks[selectedDate]?.map((task, index) => {
             return (
-              <Pressable key={task.id} style={({pressed})=>[{opacity:pressed ? 0.8 : 1}, {marginBottom: (index==allTasks[selectedDate].length-1)? 120: 0}]} onLongPress={() => completeTask(task.id)}>
+              <Pressable key={task.id} style={({pressed})=>[{opacity:pressed ? 0.8 : 1}, {marginBottom: (index==allTasks[selectedDate].length-1)? 150: 0}]} onLongPress={() => completeTask(task.id)}>
                <Task text={task.text} duration={task.duration} index={task.action} TILMode={TILMode}/>
               </Pressable>
               )
@@ -119,7 +116,7 @@ export default NoteView = ({ selectedDate, hideCalendar, setFullscreen }) => {
         getTips().map((tip, index) => {
           return (
             <Pressable key={tip.id} style={({pressed})=>[{opacity:pressed ? 0.8 : 1}, {marginBottom: (index==getTips().length-1)? 110: 0}]} onLongPress={() => completeTask(tip.id)}>
-             <Task text={tip.text} duration={0} index={-1} />
+             <Task text={tip.text} id={tip.id} duration={0} index={-1} />
             </Pressable>
             )
         })
@@ -128,7 +125,7 @@ export default NoteView = ({ selectedDate, hideCalendar, setFullscreen }) => {
       </ScrollBar>
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={[styles.writeTaskWrapper, {backgroundColor: (TILMode)? color:'#f2f3f4'}]}>
         <TextInput style={[styles.input, {backgroundColor: (TILMode)? '#f2f3f464': 'white'}, {borderColor: (TILMode)? '#f2f3f4':'#ededed'}, {color: (TILMode)? 'white':'black'}]} blurOnSubmit={false} 
-        placeholder={(!TILMode)?"What did you do?":"What's your next tip?"} placeholderTextColor={(TILMode)? '#f2f3f4':'#708090'}
+        placeholder={(!TILMode)?"What did you do?":"What's your next note?"} placeholderTextColor={(TILMode)? '#f2f3f4':'#708090'}
           onChangeText={text => setTask(text)} value={task} onSubmitEditing={() => { handleAddTask() }}   ref={inputRef}
           />
         <TouchableOpacity onPress={() => handleAddTask()}>
@@ -154,8 +151,8 @@ const styles = StyleSheet.create({
   },
   taskWrapper: {
     paddingHorizontal: 14,
-    marginBottom: 20,
     borderColor: '000',
+
   },
   sectionTitle: {
     textAlign: 'center',
@@ -212,5 +209,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
+    marginBottom: 4,
   }
 })
