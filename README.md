@@ -33,8 +33,8 @@ Click <a href="https://expo.dev/artifacts/071a8333-8701-47a6-8193-73d5945f038d">
 </div>
 
 <h3> Bugs we are aware of </h3>
-1 - Pressing hardware back after expanding the chronicle for the day sometimes makes you exit the app  <br>
-2 - In the calendar view, part of the scrollbar may go behind the input by the end of scrolling  <br>
+1 - Pressing hardware back after expanding the chronicle for the day sometimes makes you exit the app. The workaround is to press the software button at the top.  <br>
+2 - In the calendar view, part of the scrollbar may go behind the input by the end of scrolling.  <br>
 
 
 <h3> What to expect in the next update(s)</h3>
