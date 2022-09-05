@@ -1,2 +1,2 @@
-# Poll-Ups-ReactNative
-It's time for polls!
+# Daily-Chronicle-ReactNative
+Yes.
