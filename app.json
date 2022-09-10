@@ -2,13 +2,17 @@
   "expo": {
     "name": "Daily Chronicle",
     "slug": "diary-app",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/real-icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "dark",
     "splash": {
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
+    },
+    "androidStatusBar": {
+      "backgroundColor": "#ffffff",
+      "translucent": false
     },
     "updates": {
       "fallbackToCacheTimeout": 0

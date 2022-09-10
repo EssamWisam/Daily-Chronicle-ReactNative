@@ -19,6 +19,8 @@ import { SetColorMode } from '../redux/slices/colors';
 import ColorPick from './components/ColorPick';
 import X from '../assets/X.svg';
 import { SetAllTasks } from '../redux/slices/notes';
+import { SetTILMode } from '../redux/slices/notes';
+import CalendarIcon from '../assets/Calendar.svg';
 
 
 export default HomeScreen = () => {
@@ -31,11 +33,12 @@ export default HomeScreen = () => {
   const isKeyboardOpen = useKeyboardOpen();
   const [fullscreen, setFullscreen] = useState(false);
 
-  const  TILMode  = useSelector(state => state.notes.TILMode)
+  const  [TILMode, setTILMode] = [ useSelector(state => state.notes.TILMode), (payload) => dispatch(SetTILMode(payload))];
   const dispatch = useDispatch();
   const [colorMode, setColorMode] = [ useSelector(state => state.colors.colorMode), (payload) => dispatch(SetColorMode(payload))];
   const [modalVisible, setModalVisible] = useState(false);
   const notesGenre =  useSelector(state => state.notes.notesGenre)
+  const forCalendarView = useSelector(state => state.notes.forCalendarView)
 
 
   const calendarRef = useRef();
@@ -59,14 +62,24 @@ export default HomeScreen = () => {
     
   }
 
-  const hideCalendar = useMemo(() => isKeyboardOpen || fullscreen, [isKeyboardOpen, fullscreen]);
+  const hideCalendar = useMemo(() => (isKeyboardOpen && forCalendarView) || fullscreen, [isKeyboardOpen, fullscreen, forCalendarView]);
 
   const navigation = useNavigation()
   function handleBackButtonClick() {
-    console.log(fullscreen)               // Doesn't work without this console.log
     if(fullscreen){
       setFullscreen(false);
-      //inputRef.current.blur();
+      return true;
+    }
+    else if (modalVisible){
+      setModalVisible(false);
+      return true;
+    }
+    else if (colorMode){
+      setColorMode(false);
+      return true;
+    }
+    else if (TILMode){
+      setTILMode(false);
       return true;
     }
     else {
@@ -80,7 +93,7 @@ export default HomeScreen = () => {
     return () => {
       BackHandler.removeEventListener("hardwareBackPress", handleBackButtonClick);
     };
-  }, []);
+  }, [fullscreen, modalVisible, colorMode, TILMode]);
 
   return (
     <>
@@ -106,7 +119,12 @@ export default HomeScreen = () => {
           </View>
           <View style={[styles.headerRight]}>
             <TouchableOpacity onPress={()=>setModalVisible(!modalVisible)}>
-              {!hideCalendar && !TILMode && <Donut width={27} height={27} style={[styles.headerText, { color: 'white',marginRight: 10 }]}></Donut>}
+              {
+                (!modalVisible)? 
+                !hideCalendar && !TILMode && <Donut width={27} height={27} style={[styles.headerText, { color: 'white',marginRight: 10 }]}/>
+                :
+                !hideCalendar && !TILMode && <CalendarIcon width={25} height={25} style={[styles.headerText, { color: 'white',marginRight: 13 }]}/>
+                }
             </TouchableOpacity>
           </View>
         </View>

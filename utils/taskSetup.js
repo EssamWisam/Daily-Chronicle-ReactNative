@@ -16,10 +16,10 @@ import Research from '../assets/Research.svg';
 import Watch from '../assets/Watch.svg';
 import College from '../assets/College.svg';
 import Games from '../assets/Games.svg';
-import Light from '../assets/light.svg';
+import CPen from '../assets/CPen.svg';
 
 
-export const findActionType = (text) => {
+export const findActionType = (text, actionObjects) => {
    const prayWords = ["pray", "recite", "mosque", "church", "quran", "bible"]
    const relaxWords = ["relax", "rest", "sleep", "slept", "nap", "procrastinate"]
    const studyWords = ["stud","memorize", "write", "solve", "learn", "exam", "test", "quiz",  "lecture", "sheet", "course", "read", "book"]
@@ -35,47 +35,47 @@ export const findActionType = (text) => {
    const watchWords = ["watch", "movie", "show", "episode", "series", "episode", "watch", "netflix", "hulu", "amazon", "TV", "T.V.", "youtube"]
    const collegeWords = ["college", "uni", "school"]
    const gamesWords = ["game", "league", "video game", "fortnite", "dota", "lol", "playstation", "ps", "xbox"]
-      if (prayWords.some(x => text.toLowerCase().includes(x)))  return 0;
-      if (relaxWords.some(x => text.toLowerCase().includes(x))) return 1;
-      if (studyWords.some(x => text.toLowerCase().includes(x))) return 2;
-      if (gamesWords.some(x => text.toLowerCase().includes(x))) return 3;
-      if (sportWords.some(x => text.toLowerCase().includes(x))) return 4;
-      if (workWords.some(x => text.toLowerCase().includes(x)))  return 5;
-      if (eatWords.some(x => text.toLowerCase().includes(x)))   return 6;
-      if (collegeWords.some(x => text.toLowerCase().includes(x)))  return 7;
-      if (driveWords.some(x => text.toLowerCase().includes(x)))  return 8;
-      if (chatWords.some(x => text.toLowerCase().includes(x)))   return 9;
-      if (cleanWords.some(x => text.toLowerCase().includes(x)))  return 10;
-      if (meetingWords.some(x => text.toLowerCase().includes(x)))return 11;
-      if (programWords.some(x => text.toLowerCase().includes(x)))return 12;
-      if (researchWords.some(x => text.toLowerCase().includes(x)))  return 13;
-      if (watchWords.some(x => text.toLowerCase().includes(x)))  return 14;
-      else return 15
-   }
+   let returnedValue = undefined;
+      if (prayWords.some(x => text.toLowerCase().includes(x)))  returnedValue = actionObjects.find(i => i.name === "Praying")
+      if (relaxWords.some(x => text.toLowerCase().includes(x))) returnedValue = actionObjects.find(i => i.name === "Relaxing")
+      if (studyWords.some(x => text.toLowerCase().includes(x))) returnedValue = actionObjects.find(i => i.name === "Studying")
+      if (gamesWords.some(x => text.toLowerCase().includes(x))) returnedValue = actionObjects.find(i => i.name === "Gaming");
+      if (sportWords.some(x => text.toLowerCase().includes(x))) returnedValue = actionObjects.find(i => i.name === "Sports");
+      if (workWords.some(x => text.toLowerCase().includes(x)))  returnedValue = actionObjects.find(i => i.name === "Working");
+      if (eatWords.some(x => text.toLowerCase().includes(x)))   returnedValue = actionObjects.find(i => i.name === "Eating");
+      if (collegeWords.some(x => text.toLowerCase().includes(x)))  returnedValue = actionObjects.find(i => i.name === "College");
+      if (driveWords.some(x => text.toLowerCase().includes(x)))  returnedValue = actionObjects.find(i => i.name === "Driving");
+      if (chatWords.some(x => text.toLowerCase().includes(x)))   returnedValue = actionObjects.find(i => i.name === "Chatting");
+      if (cleanWords.some(x => text.toLowerCase().includes(x)))  returnedValue = actionObjects.find(i => i.name === "Cleaning");
+      if (meetingWords.some(x => text.toLowerCase().includes(x)))returnedValue = actionObjects.find(i => i.name === "Meeting");
+      if (programWords.some(x => text.toLowerCase().includes(x)))returnedValue = actionObjects.find(i => i.name === "Coding");
+      if (researchWords.some(x => text.toLowerCase().includes(x)))  returnedValue = actionObjects.find(i => i.name === "Researching");
+      if (watchWords.some(x => text.toLowerCase().includes(x)))  returnedValue = actionObjects.find(i => i.name === "Watching");
+      if (!returnedValue) return actionObjects.find(i => i.name === "Other");    // We get here if we can't match to anything or if what should be matched for doesn't exist
+      else return returnedValue;
+}
+   
 
-   export const ActionType = ({index}) => {
-         if (index == 0)  return <Pray width={24} height={24} style={styles.itemStyle}/>;
-         if (index == 1)  return <Relax width={24} height={24} style={styles.itemStyle}/>;
-         if (index == 2)  return <Study width={24} height={24} style={styles.itemStyle}/>;
-         if (index == 3)  return <Games width={24} height={24} style={styles.itemStyle}/>;
-         if (index == 4)  return <Sports width={24} height={24} style={styles.itemStyle}/>;
-         if (index == 5)  return <Work width={24} height={24} style={styles.itemStyle}/>;
-         if (index == 6)  return <Eat width={24} height={24} style={styles.itemStyle}/>;
-         if (index == 7)  return <College width={24} height={24} style={styles.itemStyle}/>;
-         if (index == 8)  return <Drive width={24} height={24} style={styles.itemStyle}/>;
-         if (index == 9)  return <Chat width={24} height={24} style={styles.itemStyle}/>;
-         if (index == 10)  return <Clean width={24} height={24} style={styles.itemStyle}/>;
-         if (index == 11)  return <Meeting width={24} height={24} style={styles.itemStyle}/>;
-         if (index == 12)  return <Program width={24} height={24} style={styles.itemStyle}/>;
-         if (index == 13)  return <Research width={24} height={24} style={styles.itemStyle}/>;
-         if (index == 14)  return <Watch width={24} height={24} style={styles.itemStyle}/>;
-         if (index == -1)  return <Light width={24} height={24} style={styles.itemStyle}/>;
-         else return <Bullet width={24} height={24} style={styles.itemStyle}/>;
+   export const ActionType = ({index, stylesProp}) => {
+         if (index == 0)  return <Pray width={24} height={24} style={stylesProp}/>;
+         if (index == 1)  return <Relax width={24} height={24} style={stylesProp}/>;
+         if (index == 2)  return <Study width={24} height={24} style={stylesProp}/>;
+         if (index == 3)  return <Games width={24} height={24} style={stylesProp}/>;
+         if (index == 4)  return <Sports width={24} height={24} style={stylesProp}/>;
+         if (index == 5)  return <Work width={24} height={24} style={stylesProp}/>;
+         if (index == 6)  return <Eat width={24} height={24} style={stylesProp}/>;
+         if (index == 7)  return <College width={24} height={24} style={stylesProp}/>;
+         if (index == 8)  return <Drive width={24} height={24} style={stylesProp}/>;
+         if (index == 9)  return <Chat width={24} height={24} style={stylesProp}/>;
+         if (index == 10)  return <Clean width={24} height={24} style={stylesProp}/>;
+         if (index == 11)  return <Meeting width={24} height={24} style={stylesProp}/>;
+         if (index == 12)  return <Program width={24} height={24} style={stylesProp}/>;
+         if (index == 13)  return <Research width={24} height={24} style={stylesProp}/>;
+         if (index == 14)  return <Watch width={24} height={24} style={stylesProp}/>;
+         if (index == 15) return <Bullet width={24} height={24} style={stylesProp}/>;
+         if (index == 16)  return <CPen width={24} height={24} style={stylesProp}/>;
       }
 
-   export const actions = ["Praying", "Relaxing", "Studying", "Games", "Sports", "Working", "Eating", "College", "Transport", "Chatting", "Cleaning", "Meetings", "Coding", "Research", "Watching", "Other",]
-   export const actionColors = ['#8082C5','#5A6BF5','#635E90','#9883DC', '#B97081', '#51e7C3', '#90A170', '#D2886C', '#996592', '#BaC558', '#5cc6b8', '#96DA6F', '#9C886C', '#EAE88E', '#968A80', '#7AC787', ]  
-   export const values = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
    const styles = StyleSheet.create({
       itemStyle: {
          width: 24,
@@ -88,13 +88,13 @@ export const findActionType = (text) => {
       });
 
    export const findDuration = (text) => {
-      if(!/\d/g.test(text))    return 0.0/12.0
+      if(!/\d/g.test(text))    return 0.0/6.0
       else {
          let hrs=0.0;
          let mins=0.0;
-         if(text.toLowerCase().includes("hour")) {
-            hrs =  text[text.indexOf("hour") - 2]
-            let hrs_ = text[text.indexOf("hour") - 3]
+         if(text.toLowerCase().includes('hour')) {
+            hrs =  text[text.indexOf('hour') - 2]
+            let hrs_ = text[text.indexOf('hour') - 3]
 
             if(!/\d/g.test(hrs))    hrs = 0.0
             else {
@@ -102,18 +102,18 @@ export const findActionType = (text) => {
                if(/\d/g.test(hrs_))    hrs = hrs + parseInt(hrs_) * 10
             }
          }
-         else if(text.toLowerCase().includes("hrs")) {
-            hrs =  text[text.indexOf("hrs") - 2]
-            let hrs_ = text[text.indexOf("hrs") - 3]
+         else if(text.toLowerCase().includes('hrs')) {
+            hrs =  text[text.indexOf('hrs') - 2]
+            let hrs_ = text[text.indexOf('hrs') - 3]
             if(!/\d/g.test(hrs)) hrs = 0.0
             else {
                hrs = parseInt(hrs)
                if(/\d/g.test(hrs_))    hrs = hrs + parseInt(hrs_) * 10
             }
          }
-         if(text.toLowerCase().includes("min")) {
-            mins =  text[text.indexOf("min") - 2]
-            let mins_ = text[text.indexOf("min") - 3]
+         if(text.toLowerCase().includes('min')) {
+            mins =  text[text.indexOf('min') - 2]
+            let mins_ = text[text.indexOf('min') - 3]
             if(!/\d/g.test(mins)) mins = 0.0
             else {
                mins = parseInt(mins)
@@ -121,17 +121,16 @@ export const findActionType = (text) => {
             }
 
             }
-          return ((hrs) + (mins / 60.0))/12.0
+          return ((hrs) + (mins / 60.0))/6.0
 
          }
    }
 
 
    export const textDecorator = (text) => {
-         if(text.toLowerCase().includes(" for ") )        return(text.slice(0, text.lastIndexOf(" for ")));
-         else if(text.toLowerCase().includes(" in ") )    return(text.slice(0, text.lastIndexOf(" in ")));
-         return (hrs + mins/60.0)/12.0
-      
+         if(text.toLowerCase().includes(' for ') )        return(text.slice(0, text.lastIndexOf("for ")));
+         else if(text.toLowerCase().includes(' in ') )    return(text.slice(0, text.lastIndexOf("in ")));
+         return text
    }
 
 
@@ -160,8 +159,9 @@ export const getDay=()=>{
 export const getGreeting = () => {
    const date = new Date();
    const hour = date.getHours();
-   if (hour < 12) return 'Good Morning';
-   else if (hour < 18) return 'Good Afternoon';
-   else if (hour < 22)return 'Good Evening';
-   else return 'Good Night';
+   if (hour >= 4 && hour < 12) return 'Good Morning';
+   else if (hour >= 12 && hour < 18) return 'Good Afternoon';
+   else if (hour >= 18 && hour < 22) return 'Good Evening';
+   else if (hour >= 22 || hour < 4) return 'Good Night';
+   else return "Hmmmm."
 }

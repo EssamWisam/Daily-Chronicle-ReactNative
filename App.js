@@ -1,5 +1,5 @@
 import 'react-native-gesture-handler';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useFonts } from 'expo-font';
 import {  Text, View, Pressable, TextInput, Vibration } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
@@ -21,6 +21,7 @@ import { SetTILMode } from './redux/slices/notes';
 import { SetColorMode } from './redux/slices/colors';
 import { SetOpenedNotes } from './redux/slices/notes';
 import { SetNoteFolders } from './redux/slices/notes';
+import { SetForCalendarView } from './redux/slices/notes';
 import {
   DrawerContentScrollView,
   DrawerItemList,
@@ -55,6 +56,9 @@ function CustomDrawerContent(props) {
   const color = useSelector(state => state.colors.color)['hex']
   const [openedNotes, setOpenedNotes] = [ useSelector(state => state.notes.openedNotes), (payload) => dispatch(SetOpenedNotes(payload))];
   const [noteFolders, setNoteFolders] = [ useSelector(state => state.notes.noteFolders), (payload) => dispatch(SetNoteFolders(payload))];
+  const [forCalendarView, setForCalendarView] = [ useSelector(state => state.notes.forCalendarView), (payload) => dispatch(SetForCalendarView(payload))];
+
+
   const deleteFolder = (target) => {
     if(target != noteFolders[0]){
     setNoteFolders(noteFolders.filter((noteFolder, i) => noteFolder.id !== target.id));
@@ -73,8 +77,15 @@ function CustomDrawerContent(props) {
     setText('');
     refRBSheet.current.close()
     Keyboard.dismiss();
+    setTimeout(() => {
+    setForCalendarView(true);
+    }, 400);
     }
   }
+
+  useEffect(() => {
+    setForCalendarView(!refRBSheet.current.state.modalVisible)
+   }, [refRBSheet.current?.state.modalVisible]);
 
   return (
     <DrawerContentScrollView {...props}>
@@ -121,7 +132,7 @@ function CustomDrawerContent(props) {
               label = {() => <Text style={{ color:  'white', fontFamily: 'SemiBold', letterSpacing: 1, fontSize: 13 }}>{"   Add More"}</Text>}
               icon={({focused, size}) => (<Add width={14} height={14} style={{marginLeft: 10, marginRight: -20}} color={false ? color: 'white'} />)}
               activeTintColor='white'
-              onPress={() => refRBSheet.current.open()}
+              onPress={() => {refRBSheet.current.open(); setForCalendarView(false);}}
              />}
       <DrawerItem
         label = {() => <Text style={{ color: 'white', fontFamily: 'SemiBold', letterSpacing: 2 }}>{"Settings"}</Text>}
@@ -155,7 +166,6 @@ function CustomDrawerContent(props) {
           onChangeText={text => setText(text)} value={text} onSubmitEditing={() => { handleAddFolder() }}  
           maxLength={15} 
           />
-
       </RBSheet>
 
     </DrawerContentScrollView>

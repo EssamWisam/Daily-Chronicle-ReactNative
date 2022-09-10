@@ -1,130 +1,180 @@
-import React, {useState, useRef, useEffect} from 'react';
-import {ScrollView, View, Animated} from 'react-native';
-import PropTypes from 'prop-types';
-// This is a modifed node module
-export default function ScrollBar({
-  indicatorColor = '#CFD8DC',
-  indicatorBackground = '#455A64',
-  indicatorWidth = 6,
-  persistent = false,
-  style,
-  children,
-  hideCalendar,
-  added,
-  selectedDate,
-  timeBeforeFadeAway
-}) {
-  const [completeScrollBarHeight, setCompleteScrollBarHeight] = useState(1);
-  const [visibleScrollBarHeight, setVisibleScrollBarHeight] = useState(0);
-  const [indicatorOpacity, setOpacity] = useState(new Animated.Value(0));
-  const scrollIndicator = useRef(new Animated.Value(0)).current;
-  // scroll to end whenever added is true
+import React, { useState, useEffect, useRef } from 'react';
+
+import { ScrollView, View, StyleSheet, Animated } from 'react-native';
+
+export default ({
+    children,
+    indicatorHeight = 200,
+    flexibleIndicator = true,
+    shouldIndicatorHide = true,
+    hideTimeout = 500,
+    style = {},
+    scrollViewStyle = {},
+    scrollIndicatorContainerStyle = {},
+    scrollIndicatorStyle = {},
+    added,
+    selectedDate,
+    hideCalendar,
+    ...props
+}) => {
   const scrollViewRef = useRef(null);
+
+     useEffect(() => {
+       
+       scrollViewRef.current.scrollToEnd({animated: true});
+     }, [added]);
+  
+   // scroll to top whenever selectedDate changes
+   useEffect(() => {
+     scrollViewRef.current.scrollTo({x: 0, y: 1, animated: true});
+     }, [selectedDate]);
+  
+   // scroll to top whenever hideCalendar is true
+   useEffect(() => {
+     if (hideCalendar) {
+       scrollViewRef.current.scrollTo({x: 0, y: 1, animated: true});
+     }
+     }, [hideCalendar]);
+
+    const [fadeAnim] = useState(
+        new Animated.Value(shouldIndicatorHide ? 0 : 1),
+    );
+    const [fromTop, setFromTop] = useState(0);
+    const [indicatorFlexibleHeight, setIndicatorFlexibleHeight] = useState(
+        indicatorHeight,
+    );
+    const [visibleScrollPartHeight, setVisibleScrollPartHeight] = useState(1);
+    const [fullSizeContentHeight, setFullSizeContentHeight] = useState(1);
+    const [isIndicatorHidden, setIsIndicatorHidden] = useState(
+        shouldIndicatorHide,
+    );
+
+    const [
+        scrollIndicatorContainerHeight,
+        setScrollIndicatorContainerHeight,
+    ] = useState(1);
+
+    const handleScroll = ({ contentOffset }) => {
+        //Calculation scroll indicator position based on child height and scrollView view height)
+        const movePercent =
+            contentOffset.y /
+            ((fullSizeContentHeight - visibleScrollPartHeight) / 100);
+        const position =
+            ((visibleScrollPartHeight -
+                indicatorFlexibleHeight -
+                (visibleScrollPartHeight - scrollIndicatorContainerHeight)) /
+                100) *
+            movePercent;
+        setFromTop(position);
+    };
+
     useEffect(() => {
-     
-        scrollViewRef.current.scrollToEnd({animated: true});
-      
-    }, [added]);
+        //Hide / show Animation effect
+        if (shouldIndicatorHide) {
+            isIndicatorHidden
+                ? setTimeout(()=>{
+                  Animated.timing(fadeAnim, {
+                      toValue: 0,
+                      duration: hideTimeout,
+                  }).start()
+                }, 3500)
+                : Animated.timing(fadeAnim, {
+                      toValue: 1,
+                      duration: hideTimeout,
+                  }).start();
+        }
+    }, [fadeAnim, hideTimeout, isIndicatorHidden, shouldIndicatorHide]);
 
-    // scroll to top whenever selectedDate changes
     useEffect(() => {
-      scrollViewRef.current.scrollTo({x: 0, y: 0, animated: true});
-    }, [selectedDate]);
+        //Change indicator height effect
+        flexibleIndicator &&
+            setIndicatorFlexibleHeight(
+                visibleScrollPartHeight *
+                    (visibleScrollPartHeight / fullSizeContentHeight),
+            );
+    }, [visibleScrollPartHeight, fullSizeContentHeight, flexibleIndicator]);
 
-    // scroll to top whenever hideCalendar is true
-    useEffect(() => {
-      if (hideCalendar) {
-        scrollViewRef.current.scrollTo({x: 0, y: 0, animated: true});
-      }
-    }, [hideCalendar]);
+    const runHideTimer = () => {
+        shouldIndicatorHide && setIsIndicatorHidden(true);
+    };
 
-  const scrollIndicatorSize =
-    completeScrollBarHeight > visibleScrollBarHeight
-      ? (visibleScrollBarHeight * visibleScrollBarHeight) / completeScrollBarHeight
-      : visibleScrollBarHeight;
+    const showIndicator = () => {
+        shouldIndicatorHide && setIsIndicatorHidden(false);
+    };
 
-  const difference =
-    visibleScrollBarHeight > scrollIndicatorSize
-      ? visibleScrollBarHeight - scrollIndicatorSize
-      : 1;
+    const isContentSmallerThanScrollView =
+        fullSizeContentHeight - visibleScrollPartHeight <= 0;
 
-  const scrollIndicatorPosition = Animated.multiply(
-    scrollIndicator,
-    visibleScrollBarHeight / completeScrollBarHeight,
-  ).interpolate({
-    inputRange: [0, difference],
-    outputRange: [0, difference],
-    extrapolate: 'clamp',
-  });
-
-  const fade = value => {
-    Animated.timing(indicatorOpacity, {
-      toValue: value,
-      duration: 400,
-      useNativeDriver: true,
-    }).start();
-  };
-
-  const Indicator = () => (
-    <Animated.View
-      style={{
-        opacity: persistent ? 1 : indicatorOpacity,
-        height: '100%',
-        width: indicatorWidth,
-        backgroundColor: indicatorBackground,
-        borderRadius: 8,
-      }}>
-      <Animated.View
-        style={{
-          width: indicatorWidth,
-          borderRadius: 8,
-          backgroundColor: indicatorColor,
-          height: scrollIndicatorSize,
-          transform: [{translateY: scrollIndicatorPosition}],
-        }}
-      />
-    </Animated.View>
-  );
-  return (
-    <>
-      <View style={{flexDirection: 'row', ...style}}>
-        <ScrollView
-          ref={scrollViewRef}
-          contentContainerStyle={{paddingRight: 14}}
-          showsVerticalScrollIndicator={false}
-          onContentSizeChange={(width, height) => {
-            setCompleteScrollBarHeight(height);
-          }}
-          onLayout={({
-            nativeEvent: {
-              layout: {height},
-            },
-          }) => {
-            setVisibleScrollBarHeight(height);
-          }}
-          onScroll={(Animated.event(
-            [{nativeEvent: {contentOffset: {y: scrollIndicator}}}],
-            {useNativeDriver: false},
-          ))}
-          onMomentumScrollEnd={() => setTimeout(()=>fade(0), timeBeforeFadeAway)}
-          onScrollBeginDrag={() => fade(1)}
-          scrollEventThrottle={16}>
-          {children}
-        </ScrollView>
-        <Indicator />
-      </View>
-    </>
-  );
-}
-
-ScrollBar.propTypes = {
-  indicatorColor: PropTypes.string,
-  indicatorBackground: PropTypes.string,
-  innerWidth: PropTypes.number,
-  style: PropTypes.object,
-  persitent: PropTypes.bool,
-  hideCalendar: PropTypes.bool,
-  added: PropTypes.bool,
-  selectedDate: PropTypes.string,
-  timeBeforeFadeAway: PropTypes.number,
+    return (
+        <View style={[styles.container, style]}>
+            <ScrollView
+                style={[styles.scrollViewContainer, scrollViewStyle]}
+                onContentSizeChange={(width, height) => {
+                    setFullSizeContentHeight(height);
+                }}
+                onLayout={e =>
+                    setVisibleScrollPartHeight(e.nativeEvent.layout.height)
+                }
+                onScroll={({ nativeEvent }) => handleScroll(nativeEvent)}
+                scrollEventThrottle={16}
+                onMomentumScrollEnd={() => runHideTimer()}
+                onScrollBeginDrag={() => showIndicator()}
+                showsVerticalScrollIndicator={false}
+                ref={scrollViewRef}
+                {...props}
+            >
+                {children}
+            </ScrollView>
+            {!isContentSmallerThanScrollView && (
+                <Animated.View
+                    style={[
+                        styles.scrollIndicatorContainer,
+                        { opacity: fadeAnim },
+                        scrollIndicatorContainerStyle,
+                    ]}
+                    onLayout={e =>
+                        setScrollIndicatorContainerHeight(
+                            e.nativeEvent.layout.height,
+                        )
+                    }
+                >
+                    <View
+                        style={[
+                            styles.scrollIndicator,
+                            { top: fromTop, height: indicatorFlexibleHeight },
+                            scrollIndicatorStyle,
+                        ]}
+                    />
+                </Animated.View>
+            )}
+        </View>
+    );
 };
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        flexDirection: 'row',
+    },
+    scrollViewContainer: {
+        flex: 1,
+    },
+    scrollIndicatorContainer: {
+        position: 'absolute',
+        top: 0,
+        right: 2,
+        bottom: 0,
+        overflow: 'hidden',
+        borderRadius: 10,
+        width: 6,
+        marginVertical: 3,
+    },
+    scrollIndicator: {
+        position: 'absolute',
+        right: 0,
+        width: 6,
+        borderRadius: 3,
+        opacity: 0.5,
+        backgroundColor: 'blue',
+    },
+});

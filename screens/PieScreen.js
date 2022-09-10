@@ -1,12 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { PieChart } from "react-native-gifted-charts";
 import {View, StyleSheet, Text, Modal, TouchableOpacity } from "react-native";
-import { colors } from "../assets/colors/colors";
-import { StatusBar } from 'expo-status-bar';
-import {actionColors, values, actions} from '../utils/taskSetup';
 import { useSelector } from 'react-redux';
 
 export default PieScreen = ({ currentDate, modalVisible, dateText}) => {
+  const actionObjects = useSelector(state => state.notes.actionObjects)
+  const actionColors = actionObjects.map((action) => action.color);
+  const values = actionObjects.map((action) => action.value);
+  const actions = actionObjects.map((action) => action.name);
   
   const allTasks = useSelector(state => state.notes.allTasks)
 
@@ -29,8 +30,9 @@ export default PieScreen = ({ currentDate, modalVisible, dateText}) => {
 
   
   for(let i=0; i<allData.length; i++) {
-    values[allData[i].action] += allData[i].duration;
-
+    actionIndex = actions.indexOf(allData[i].action.name);
+    if(actionIndex != -1) values[actionIndex] += allData[i].duration;
+    else values[actions.indexOf('Other')] += allData[i].duration;
   }
 
   let sum = values.reduce((partialSum, a) => partialSum + a, 0);
