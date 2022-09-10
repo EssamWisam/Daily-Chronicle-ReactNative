@@ -29,9 +29,8 @@ Click <a href="https://expo.dev/artifacts/dab6d6d9-ce40-4263-9eed-bc9304f20188">
 <img src="https://user-images.githubusercontent.com/49572294/188500814-61ea3835-a8d4-4feb-b31c-73cc4b497bd3.png" >
 
 
-
 <div align='center'>
-<img src="https://user-images.githubusercontent.com/49572294/188502248-17bd843f-9e1a-4477-b46b-9ef17e4490d5.gif" width="350" >
+<img src="https://user-images.githubusercontent.com/49572294/189504796-e59da348-cf33-4b31-8e5b-ad47d7735fd9.gif" width="350" >
 </div>
 
 <h3> Bugs we are aware of </h3>
