@@ -33,16 +33,6 @@ Click <a href="https://expo.dev/artifacts/dab6d6d9-ce40-4263-9eed-bc9304f20188">
 <img src="https://user-images.githubusercontent.com/49572294/189504796-e59da348-cf33-4b31-8e5b-ad47d7735fd9.gif" width="350" >
 </div>
 
-<h3> Bugs we are aware of </h3>
-1 - Pressing hardware back after expanding the chronicle for the day sometimes makes you exit the app. The workaround is to press the software button at the top.  <br>
-2 - In the calendar view, part of the scrollbar may go behind the input by the end of scrolling.  <br>
-
-
-<h3> What to expect in the next update(s)</h3>
-1 - Allowing manual setting of task types <br>
-2 - Being able to add new task types and improving or removing determinstic inference from text <br>
-3 - Being able to set the time manually via a slider instead of determinstic inference from text (very soon, hopefully) <br>
-4 - Long press gives you option to edit or delete instead of just deleting <br>
 
 
 <h2 align='center'> Thank you 💛  </h2>
