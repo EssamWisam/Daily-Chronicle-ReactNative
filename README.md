@@ -22,7 +22,7 @@ then with an Android simulator active
 ```
 Press a
 ```
-Click <a href="https://expo.dev/artifacts/b9025eb9-3064-4eab-a10b-f6275de55e28">here</a> to download the alpha release on your android phone 📱.
+Click <a href="https://expo.dev/artifacts/71a47b4f-5be5-4e2c-922b-dd0ce70f3d64">here</a> to download the alpha release on your android phone 📱.
 
 <h2 align='center'> Demo & Features 🔥 </h2>
 <img src="https://user-images.githubusercontent.com/49572294/189504589-6485256c-ee00-4539-8fbe-cbcba9b441c0.png" >
