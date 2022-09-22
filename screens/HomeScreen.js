@@ -104,7 +104,7 @@ export default HomeScreen = () => {
         <View style={[styles.header]}>
           <View style={[styles.headerLeft]}>
             {(!hideCalendar || TILMode ) ?
-              <TouchableOpacity onPress={() => navigation.openDrawer()}>
+              <TouchableOpacity onPress={() => {Keyboard.dismiss(); navigation.openDrawer();}}>
                 <Ham width={35} height={35} style={[styles.ham, { color: 'white' }]}></Ham>
               </TouchableOpacity> :
               (!TILMode) ?
@@ -169,7 +169,6 @@ export default HomeScreen = () => {
     </>
   );
 }
-
 
 const styles = StyleSheet.create({
   container: {

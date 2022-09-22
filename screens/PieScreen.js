@@ -1,13 +1,23 @@
 import { useEffect } from 'react';
 import { PieChart } from "react-native-gifted-charts";
-import {View, StyleSheet, Text, Modal, TouchableOpacity } from "react-native";
+import {View, StyleSheet, Text, ScrollView, Modal, TouchableOpacity } from "react-native";
 import { useSelector } from 'react-redux';
+import { hexToHsv } from '../utils/taskSetup';
 
 export default PieScreen = ({ currentDate, modalVisible, dateText}) => {
   const actionObjects = useSelector(state => state.notes.actionObjects)
   const actionColors = actionObjects.map((action) => action.color);
   const values = actionObjects.map((action) => action.value);
   const actions = actionObjects.map((action) => action.name);
+  const color = useSelector(state => state.colors.color)['hex']
+  const modActionColors = actionColors.map((c) => {
+  const [_h, s, l] = hexToHsv(c)
+  const [new_h, _s, _l] = hexToHsv(color)
+  return 'hsl(' + new_h + ', ' + s + '%, ' + l + '%)'
+  }
+  );
+
+
   
   const allTasks = useSelector(state => state.notes.allTasks)
 
@@ -18,7 +28,6 @@ export default PieScreen = ({ currentDate, modalVisible, dateText}) => {
       
   }, [allTasks])
 
-  const color = useSelector(state => state.colors.color)['hex']
 
   const asArray = Object.entries(allTasks);
   const filtered = asArray.filter(([key, value]) => ((key.substring(0, 8) === currentDate.substring(0, 8)) && parseInt(key.substring(8, 10)) <= parseInt(currentDate.substring(8, 10))));
@@ -43,7 +52,7 @@ export default PieScreen = ({ currentDate, modalVisible, dateText}) => {
   const pieData = []
   for(let i=0; i<values.length; i++) {
     if(values[i] != 0.0 || (i==values.length-1)) {
-      pieData.push({value: round(values[i]/sum), color: actionColors[i], gradientCenterColor: actionColors[i], label: actions[i]})
+      pieData.push({value: round(values[i]/sum), color: modActionColors[i], gradientCenterColor: modActionColors[i], label: actions[i]})
     }
   }
 
@@ -56,17 +65,13 @@ const renderDot = color => {
 };
 
 const renderLegendComponent = () => {
-  const RowComponent = ({label1, label2, percent1, percent2, color1, color2}) => {
+  const RowComponent = ({label1,  percent1, color1, }) => {
     return (
       <View style={[styles.rowStyle, {marginBottom: 9}]}>
-      <View style={{flexDirection: 'row', alignItems: 'center', width: 120, marginRight: 20,}}>
+      <View style={{flexDirection: 'row', alignItems: 'center',  marginHorizontal: 10, marginVertical: 4}}>
         {renderDot(color1)}
-        <Text style={{color: 'black', fontFamily: 'Regular'}}>{label1}: {percent1}%</Text>
+        <Text style={{color: 'black', fontFamily: 'Bold'}}>{label1}: <Text style={{color: '#3a3a3a'}}>{percent1}%</Text></Text>
       </View>
-      {label2 && <View style={{flexDirection: 'row', alignItems: 'center', width: 120}}>
-        {renderDot(color2)}
-        <Text style={{color: 'black', fontFamily: 'Regular'}}>{label2}: {percent2}%</Text>
-      </View>}
     </View>
     )
   }
@@ -80,13 +85,29 @@ const renderLegendComponent = () => {
   }, []);
   
   let pieRows = [];
-  for (var i = 0; i < pieDataPairs.length; i++) {
-      pieRows.push(<RowComponent key={i} label1={pieDataPairs[i][0].label} label2={pieDataPairs[i][1].label} 
+  for (var i = pieDataPairs.length-1; i >= 0; i--) {
+    if(pieDataPairs[i][0].value != '') {
+      pieRows.push(<RowComponent key={i} label1={pieDataPairs[i][0].label}  
         color1={pieDataPairs[i][0].color} 
-        color2={pieDataPairs[i][1].color} percent1={pieDataPairs[i][0].value} percent2={pieDataPairs[i][1].value}/>);
+        percent1={pieDataPairs[i][0].value} />);
+      }
   }
+  // Technical Debt: Forcing a double layout wasn't the best idea
+  for (var i = pieDataPairs.length-1; i >= 0; i--) {
+    if(pieDataPairs[i][1].value != '') {
+    pieRows.push(<RowComponent key={i} label1={pieDataPairs[i][1].label}   color1={pieDataPairs[i][1].color} 
+       percent1={pieDataPairs[i][1].value} />);
+      }
 
-  return <>{pieRows}</>;
+}
+
+
+  return   (
+  <View >
+  <ScrollView  contentContainerStyle={{flexDirection: 'row', alignItems: 'center',  marginHorizontal: 25, flexWrap: 'wrap', height: 290}}>
+    {pieRows}
+  </ScrollView>
+  </View>)
 
 };
 

@@ -76,16 +76,6 @@ export const findActionType = (text, actionObjects) => {
          if (index == 16)  return <CPen width={24} height={24} style={stylesProp}/>;
       }
 
-   const styles = StyleSheet.create({
-      itemStyle: {
-         width: 24,
-         height: 24,
-         color: '#f2f3f4',
-         marginRight: 13,
-         marginLeft: 13
-   },
-   
-      });
 
    export const findDuration = (text) => {
       if(!/\d/g.test(text))    return 0.0/6.0
@@ -164,4 +154,41 @@ export const getGreeting = () => {
    else if (hour >= 18 && hour < 22) return 'Good Evening';
    else if (hour >= 22 || hour < 4) return 'Good Night';
    else return "Hmmmm."
+}
+
+
+
+// convert hex to hsv
+export const hexToHsv = (hex) => {
+   let r = parseInt(hex.substring(1, 3), 16) / 255;
+   let g = parseInt(hex.substring(3, 5), 16) / 255;
+   let b = parseInt(hex.substring(5, 7), 16) / 255;
+   let max = Math.max(r, g, b);
+   let min = Math.min(r, g, b);
+   let h, s, l = max;
+   let d = max - min;
+   s = max == 0 ? 0 : d / max;
+   if (max == min) {
+      h = 0;
+   } else {
+      switch (max) {
+         case r:
+            h = (g - b) / d + (g < b ? 6 : 0);
+            break;
+         case g:
+            h = (b - r) / d + 2;
+            break;
+         case b:
+            h = (r - g) / d + 4;
+            break;
+      }
+      h /= 6;
+   }
+   s = s*100;
+   s = Math.round(s);
+   l = l*100;
+   l = Math.round(l);
+   h = Math.round(360*h);
+   return [h, s, l]
+
 }

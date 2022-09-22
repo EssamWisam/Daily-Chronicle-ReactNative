@@ -135,6 +135,7 @@ export default NoteView = ({ selectedDate, hideCalendar, setFullscreen }) => {
         <TextInput style={[styles.input, {backgroundColor: (TILMode)? '#f2f3f464': 'white'}, {borderColor: (TILMode)? '#f2f3f4':'#ededed'}, {color: (TILMode)? 'white':'black'}]} blurOnSubmit={false} 
         placeholder={(!TILMode)?"What did you do?":"What's your next note?"} placeholderTextColor={(TILMode)? '#f2f3f4':'#708090'}
           onChangeText={text => setTask(text)} value={task} onSubmitEditing={() => { handleAddTask() }}   ref={inputRef}
+          maxLength={140}
           />
         <TouchableOpacity onPress={() => handleAddTask()}>
           <View style={[styles.addButtonWrapper, { backgroundColor: (TILMode)? 'white': color, shadowColor: color }]}>

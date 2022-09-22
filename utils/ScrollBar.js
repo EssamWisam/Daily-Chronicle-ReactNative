@@ -120,6 +120,7 @@ export default ({
                 onMomentumScrollEnd={() => runHideTimer()}
                 onScrollBeginDrag={() => showIndicator()}
                 showsVerticalScrollIndicator={false}
+                keyboardShouldPersistTaps='handled'
                 ref={scrollViewRef}
                 {...props}
             >

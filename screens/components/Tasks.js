@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView, Pressable, Vibration, Alert, Modal } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView, Pressable, Vibration, Alert, Modal, Keyboard } from 'react-native';
 import { useState, useEffect, useRef } from 'react';
 import * as Progress from 'react-native-progress';
 import {  ActionType, textDecorator } from '../../utils/taskSetup';
@@ -30,8 +30,9 @@ export default Task = ({item, text, duration, actionObj, id}) => {
    const  refRBSheet  = useRef();
    const refRBSheetInput = useRef();
    const [iconModalVisible, setIconModalVisible] = useState(false);
+   const [svgModalVisible, setSvgModalVisible] = useState(false);
    const [forCalendarView, setForCalendarView] = [ useSelector(state => state.notes.forCalendarView), (payload) => dispatch(SetForCalendarView(payload))];
-
+   const [inputIndex, setInputIndex] = useState(16);
    // whenever RB sheet changes
     useEffect(() => {
      setForCalendarView(!refRBSheetInput.current.state.modalVisible)
@@ -67,36 +68,27 @@ export default Task = ({item, text, duration, actionObj, id}) => {
         const letters = '0123456789ABCDEF';
         let color = '#';
         for (let i = 0; i < 6; i++) {
-          color += letters[Math.floor(Math.random() * 16)];
+          let number = Math.floor(Math.random() * 16)
+          number = number > 8 ? number - parseInt(number/3) : number;
+          color += letters[number];
         }
+        // make the color darker
         return color;
       }
+      
 
 
-    const addTaskAction = (actionText) => {
-      const actions = actionObjects.map((action) => action.name);
-      const hotWord =  actionText.match(/\(([^)]+)\)/);
-      if ( hotWord && actions.includes(hotWord[1])) {
-        const candidateAction = actionObjects.find((action) => action.name.toLowerCase() === hotWord[1].toLowerCase())
-        const newAction = {
-            name: actionText.slice(0, actionText.indexOf("(")),
-            value: 0.0,
-            color: randomColor(),
-            index: (candidateAction)? candidateAction.index : 16,
-            id: `${actionText}_${new Date().getMilliseconds()}`
-        }
-        setActionObjects([newAction, ...actionObjects]);
-      }
-      else {
+
+    const addTaskAction = (actionText, idx) => {
+
         const newAction = {
             name: actionText,
             value: 0.0,
             color: randomColor(),
-            index: 16,
+            index: idx,
             id: `${actionText}_${new Date().getMilliseconds()}`
         }
         setActionObjects([ newAction, ...actionObjects]);
-      }
       refRBSheetInput.current.close();
       setInput('');
       
@@ -134,14 +126,12 @@ export default Task = ({item, text, duration, actionObj, id}) => {
         else                  return `${hours}h ${minutes}m`;
     }
 
-    const examples = ["Study Calculus (Studying)",  "Play Fortnite (Gaming)", "Learn Flutter (Coding)", "Walk my dog (Sports)"]
-    const randomExample = examples[Math.floor(Math.random() * examples.length)];
    
    return(
       <>
       <View style={[styles.item, {backgroundColor: color, paddingRight: (TILMode)? 5:15 }]}>
          <View style={styles.itemLeft}>
-         <TouchableOpacity onPress={() => setIconModalVisible(true)}>
+         <TouchableOpacity onPress={() => (!TILMode)?setIconModalVisible(true):null}>
             {!TILMode && <ActionType index={actionObj.index} stylesProp={styles.itemStyle} />}
             {(TILMode && notesGenre == 'Language Spice') && <Lang style={ styles.itemStyle} width={22} color='white' height={22} />}
             {(TILMode && notesGenre == 'Todo') && <Done onPress={()=>completeTask(id)} style={ styles.itemStyle} width={25} color='white' height={25} />}
@@ -198,7 +188,7 @@ export default Task = ({item, text, duration, actionObj, id}) => {
       <StatusBar backgroundColor="rgba(0,0,0,0.3)" />
       <Pressable style={{backgroundColor: 'rgba(0,0,0,0.3)', height: '100%'}} onPress={()=> setIconModalVisible(false)}>
       <View style={{marginVertical: 120, borderRadius: 100, marginHorizontal: 20, backgroundColor: color, borderRadius: 40, }}>
-      <ScrollView contentContainerStyle={{flexDirection: 'row', alignItems: 'center', padding: 15, flexWrap: 'wrap', justifyContent: 'space-around', borderRadius: 40,
+      <ScrollView  contentContainerStyle={{flexDirection: 'row', alignItems: 'center', padding: 15, flexWrap: 'wrap', justifyContent: 'space-around', borderRadius: 40,
     }} showsVerticalScrollIndicator={false}>
       <TouchableOpacity style={{flexDirection: 'column', alignItems: 'center', marginHorizontal: 3, paddingHorizontal: 4, paddingVertical: 12, borderRadius: 60, marginVertical: 6, maxwidth: 250, backgroundColor: color}} onPress={()=>{ setIconModalVisible(false); refRBSheetInput.current.open(); }}>
       <Add  width={24} height={24} color={'#f1f2f3'} />
@@ -220,7 +210,31 @@ export default Task = ({item, text, duration, actionObj, id}) => {
         </View>
       </Pressable>
     </Modal>
-
+    <Modal
+      animationType={"fade"}
+      visible={svgModalVisible}
+      transparent={true}
+    >
+      <StatusBar backgroundColor="rgba(0,0,0,0.3)" />
+      <Pressable style={{backgroundColor: 'rgba(0,0,0,0.3)', height: '100%'}} onPress={()=> setSvgModalVisible(false)}>
+      <View style={{ borderRadius: 100, marginHorizontal: 20, backgroundColor: color, borderRadius: 40, position:'absolute', bottom: 20 }}>
+      <ScrollView  contentContainerStyle={{flexDirection: 'row', alignItems: 'center', padding: 15, flexWrap: 'wrap', justifyContent: 'space-around', borderRadius: 40,
+    }} showsVerticalScrollIndicator={false}>
+        {[...Array(17).keys()].map((index, i) => {
+          return (
+            <Pressable key={index} style={({pressed})=>[{opacity:pressed ? 0.8 : 1}, 
+              {flexDirection: 'column', alignItems: 'center', marginHorizontal: 2, paddingHorizontal: 4, paddingVertical: 12,
+             borderRadius: 60, marginVertical: 6, maxwidth: 50, minWidth: 50, backgroundColor: (index!=inputIndex)?color:'#f1f2f3', borderColor: '#dadada',
+              borderWidth: 2}]} 
+              onPress={()=>{ setInputIndex(index); setSvgModalVisible(false)}}>
+              <ActionType index={index} stylesProp={[ {color: (index==inputIndex)?color:'#f1f2f3'}]} />
+            </Pressable>
+          )
+    })}
+        </ScrollView>
+        </View>
+      </Pressable>
+    </Modal>
     <RBSheet
         ref={refRBSheetInput}
         closeOnDragDown={false}
@@ -242,16 +256,32 @@ export default Task = ({item, text, duration, actionObj, id}) => {
           }
         }}
       >
-              <StatusBar backgroundColor="rgba(0,0,0,0.3)" />
+        <StatusBar backgroundColor="rgba(0,0,0,0.3)" />
+        <View style={{flex:1, flexDirection: 'row', alignItems:'center'}}>
+        <TouchableOpacity style={{marginLeft:15, borderRadius: 50, borderColor: color, borderWidth: 2, padding: 6, }} onPress={()=>{setSvgModalVisible(true)}}>
+        <ActionType  index={inputIndex} stylesProp={{color: color, padding: 2}} />
+        </TouchableOpacity>
         <TextInput style={[{ paddingVertical: 15, paddingHorizontal: 13, backgroundColor: '#FFF', marginVertical: 20, marginHorizontal: 10,
-    borderRadius: 60, borderWidth: 2, borderColor: '#bababa', width: '90%', fontFamily: 'Regular',}]} blurOnSubmit={false} 
-        placeholder={randomExample} placeholderTextColor={'#708090'}
-          onChangeText={text => setInput(text)} value={input} onSubmitEditing={() => { addTaskAction(input) }}  
-          maxLength={34} 
+    borderRadius: 60, borderWidth: 2, borderColor: '#bababa', width: '65%', fontFamily: 'Regular',}]} blurOnSubmit={false} 
+        placeholder={"Make your own type of task!"} placeholderTextColor={'#708090'}
+          onChangeText={text => setInput(text)} value={input} onSubmitEditing={() => { 
+            if(input.trim()){
+            addTaskAction(input, inputIndex); setIconModalVisible(true); setInputIndex(16);
+            }
+           }}  
+          maxLength={21} 
           />
+        <TouchableOpacity style={{marginLeft:5, borderRadius: 10, borderColor: 'white', borderWidth: 0, padding: 6, }} onPress={()=>{
+        if(input.trim()){
+          addTaskAction(input, inputIndex); setIconModalVisible(true); setInputIndex(16);
+          }
+        }}>
+        <Add  width={27} height={27} color={color} />
+        </TouchableOpacity>
+
+        </View>
       </RBSheet>
 
-    
     </>
    )
 }

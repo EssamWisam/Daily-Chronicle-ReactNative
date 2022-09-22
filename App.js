@@ -1,7 +1,7 @@
 import 'react-native-gesture-handler';
 import { useState, useRef, useEffect } from 'react';
 import { useFonts } from 'expo-font';
-import {  Text, View, Pressable, TextInput, Vibration } from 'react-native';
+import {  Text, View, Pressable, TextInput, Vibration, TouchableOpacity } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import HomeScreen from './screens/HomeScreen';
 import NoteView from './screens/components/NoteView';
@@ -16,6 +16,7 @@ import Paper from './assets/Paper.svg';
 import Paint from './assets/Paint.svg';
 import Notedown from './assets/Notedown.svg';
 import Add from './assets/add.svg';
+import Down from './assets/Down.svg';
 import { useDispatch, useSelector } from 'react-redux';
 import { SetTILMode } from './redux/slices/notes';
 import { SetColorMode } from './redux/slices/colors';
@@ -31,7 +32,7 @@ import RBSheet from "react-native-raw-bottom-sheet";
 import { Keyboard } from 'react-native';
 import { SetNotesGenre } from './redux/slices/notes';
 import { LogBox } from "react-native"
-LogBox.ignoreAllLogs(true)
+LogBox.ignoreAllLogs(); //Ignore all log notifications
 
 const Drawer = createDrawerNavigator();
 
@@ -69,7 +70,7 @@ function CustomDrawerContent(props) {
   const [text, setText] = useState("");
 
   const handleAddFolder = () => {
-    if(text) {
+    if(text.trim()) {
       setNoteFolders([...noteFolders, {
         text: text,
         id: `${text}_${new Date().getMilliseconds()}`,
@@ -88,13 +89,18 @@ function CustomDrawerContent(props) {
    }, [refRBSheet.current?.state.modalVisible]);
 
   return (
-    <DrawerContentScrollView {...props}>
+    <DrawerContentScrollView {...props} keyboardShouldPersistTaps='handled'    >
       <DrawerItem
         label = {() => <Text style={{ color: 'white', fontFamily: 'Bold', fontSize: 35 }}>{"✵ Daily Chronicle"}</Text>}
       />
         <DrawerItem
         label = {() => <Text style={{ color: TILMode ? 'white': color, fontFamily: 'SemiBold', letterSpacing: 2 }}>{"Diary"}</Text>}
-        icon={({focused, size}) => (<Diary width={25} height={25} color={TILMode ? 'white': color} />)}
+        icon={({focused, size}) => (
+        <>
+        <Diary width={25} height={25} color={TILMode ? 'white': color} />
+        </>
+
+        )}
         activeTintColor='white'
         activeBackgroundColor={TILMode ? 'transparent': 'white'}
         inactiveBackgroundColor={TILMode ? 'transparent': 'white'}
@@ -102,7 +108,12 @@ function CustomDrawerContent(props) {
       />
         <DrawerItem
         label = {() => <Text style={{ color: TILMode ? color: 'white', fontFamily: 'SemiBold', letterSpacing: 2 }}>Notes</Text>}
-        icon={({focused, size}) => (<Notedown width={25} height={25} color={TILMode ? color: 'white'} />)}
+        icon={({focused, size}) => (
+        <>
+        <Notedown width={25} height={25} color={TILMode ? color: 'white'} />
+        <Down width={25} height={25} color={TILMode ? color: 'white'} style={{ position: "absolute",right: 10,}}/>
+        </>
+        )}
         activeTintColor='white'
         activeBackgroundColor={TILMode ? 'white': 'transparent'}
         inactiveBackgroundColor={TILMode ? 'white': 'transparent'}
@@ -160,12 +171,19 @@ function CustomDrawerContent(props) {
           }
         }}
       >
+                <View style={{flex:1, flexDirection: 'row', alignItems:'center'}}>
         <TextInput style={[{ paddingVertical: 15, paddingHorizontal: 13, backgroundColor: '#FFF', marginVertical: 20, marginHorizontal: 10,
-    borderRadius: 60, borderWidth: 2, borderColor: color, width: '90%', fontFamily: 'Regular',}]} blurOnSubmit={false} 
+    borderRadius: 60, borderWidth: 2, borderColor: color, width: '80%', fontFamily: 'Regular',}]} blurOnSubmit={false} 
         placeholder={"Add a new notes folder"} placeholderTextColor={'#708090'}
           onChangeText={text => setText(text)} value={text} onSubmitEditing={() => { handleAddFolder() }}  
           maxLength={15} 
           />
+        <TouchableOpacity style={{marginLeft:5, borderRadius: 10, borderColor: 'white', borderWidth: 0, padding: 6, }} onPress={()=>{
+          handleAddFolder()
+        }}>
+        <Add  width={27} height={27} color={color} />
+        </TouchableOpacity>
+        </View>
       </RBSheet>
 
     </DrawerContentScrollView>

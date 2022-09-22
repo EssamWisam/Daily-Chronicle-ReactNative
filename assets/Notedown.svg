@@ -1,13 +1,23 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
-<!-- Generator: Adobe Illustrator 18.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generator: Adobe Illustrator 19.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
 <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 viewBox="0 0 60 60" style="enable-background:new 0 0 60 60;" xml:space="preserve">
+	 viewBox="0 0 489.6 489.6" style="enable-background:new 0 0 489.6 489.6;" xml:space="preserve">
 <g>
-	<path d="M35,36v24h24V36H35z M57,58H37V38h9v12.586l-4.293-4.293l-1.414,1.414L47,54.414l6.707-6.707l-1.414-1.414L48,50.586V38h9
-		V58z" fill="currentColor"/>
-	<path d="M38,12H18v10h20V12z M35,20H21v-2h14V20z M35,16H21v-2h14V16z" fill="currentColor"/>
-	<path d="M47,0H11H1v60h10h21V33h15V0z M9,58H3V2h6V58z M40,24H16V10h24V24z" fill="currentColor"/>
+	<g>
+		<g>
+			<path d="M64.75,82.1h56.8c5.4,0,10.1-4.3,10.1-10.1c0-5.4-4.3-10.1-10.1-10.1h-56.8c-5.4,0-10.1,4.3-10.1,10.1
+				C54.65,77.4,59.35,82.1,64.75,82.1z" fill="currentColor"/>
+			<path d="M64.75,182.4h56.8c5.4,0,10.1-4.3,10.1-10.1c0-5.4-4.3-10.1-10.1-10.1h-56.8c-5.4,0-10.1,4.3-10.1,10.1
+				C54.65,177.7,59.35,182.4,64.75,182.4z" fill="currentColor"/>
+			<path d="M64.75,327.8h56.8c5.4,0,10.1-4.3,10.1-10.1c0-5.4-4.3-10.1-10.1-10.1h-56.8c-5.4,0-10.1,4.3-10.1,10.1
+				C54.65,323.2,59.35,327.8,64.75,327.8z" fill="currentColor"/>
+			<path d="M131.25,418.1c0-5.4-4.3-10.1-10.1-10.1h-56.4c-5.4,0-10.1,4.3-10.1,10.1c0,5.4,4.3,10.1,10.1,10.1h56.8
+				C127.05,427.8,131.25,423.5,131.25,418.1z" fill="currentColor"/>
+			<path d="M93.15,0v42h28.4c16.3,0,29.9,13.2,29.9,29.9s-13.2,29.9-29.9,29.9h-28.4v40.4h28.4c16.3,0,29.9,13.2,29.9,29.9
+				s-13.6,29.9-29.9,29.9h-28.4v85.6h28.4c16.3,0,29.9,13.2,29.9,29.9c0,16.3-13.2,29.9-29.9,29.9h-28.4v40.4h28.4
+				c16.3,0,29.9,13.2,29.9,29.9c0,16.3-13.2,29.9-29.9,29.9h-28.4v42h341.8V0H93.15z" fill="currentColor"/>
+		</g>
+	</g>
 </g>
 <g>
 </g>
