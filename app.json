@@ -2,7 +2,7 @@
   "expo": {
     "name": "Daily Chronicle",
     "slug": "diary-app",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "orientation": "portrait",
     "icon": "./assets/real-icon.png",
     "userInterfaceStyle": "dark",
@@ -26,8 +26,8 @@
     },
     "android": {
       "package": "com.essamos.diary",
-      "permissions" : [],
-      "versionCode": 1,
+      "permissions": [],
+      "versionCode": 3,
       "adaptiveIcon": {
         "foregroundImage": "./assets/real-icon.png",
         "backgroundColor": "#FFFFFF"
@@ -35,6 +35,11 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "0141a6e7-4dd3-4870-882f-c4fd26f04195"
+      }
     }
   }
 }

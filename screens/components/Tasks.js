@@ -5,12 +5,19 @@ import {  ActionType, textDecorator } from '../../utils/taskSetup';
 import { useSelector, useDispatch } from 'react-redux';
 import { SetTips } from '../../redux/slices/notes';
 import { SetTasks } from '../../redux/slices/notes';
+import { SetTodosList } from '../../redux/slices/notes';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import Lang from '../../assets/Lang.svg'
 import Light from '../../assets/light.svg'
 import Done from '../../assets/Done.svg'
 import Slider from '@react-native-community/slider';
 import Add from '../../assets/add.svg';
+import Do from '../../assets/Do.svg';
+import Schedule from '../../assets/Schedule.svg';
+import Delegate from '../../assets/Delegate.svg';
+import EDelete from '../../assets/EDelete.svg';
+import CompleteTask from '../../assets/CompleteTask.svg';
+import BulletPoint from '../../assets/RightArrow.svg';
 import { SetActionObjects } from '../../redux/slices/notes';
 import { SetForCalendarView } from '../../redux/slices/notes';
 import { StatusBar } from 'expo-status-bar';
@@ -19,17 +26,21 @@ import { StatusBar } from 'expo-status-bar';
 
 export default Task = ({item, text, duration, actionObj, id}) => {
    const color = useSelector(state => state.colors.color)['hex']
-   const  TILMode  = useSelector(state => state.notes.TILMode)
+   const  notesMode  = useSelector(state => state.notes.notesMode)
    const notesGenre = useSelector(state => state.notes.notesGenre)
+   const todosGenre = useSelector(state => state.notes.todosGenre)
+   const todosMode = useSelector(state => state.notes.todosMode)
    const allTasks = useSelector(state => state.notes.allTasks)
    const [actionObjects, setActionObjects] = [ useSelector(state => state.notes.actionObjects), (payload) => dispatch(SetActionObjects(payload))];
    const dispatch = useDispatch();
    const [tips, setTips] = [ useSelector(state => state.notes.tips), (payload) => dispatch(SetTips(payload))];
    const [tasks, setTasks] = [ useSelector(state => state.notes.tasks), (payload) => dispatch(SetTasks(payload))];
+    const [todosList, setTodosList] = [ useSelector(state => state.notes.todosList), (payload) => dispatch(SetTodosList(payload))];
    const [input, setInput] = useState('');
    const  refRBSheet  = useRef();
    const refRBSheetInput = useRef();
    const [iconModalVisible, setIconModalVisible] = useState(false);
+   const [eisenhourModalVisible, setEisenhourModalVisible] = useState(false);
    const [svgModalVisible, setSvgModalVisible] = useState(false);
    const [forCalendarView, setForCalendarView] = [ useSelector(state => state.notes.forCalendarView), (payload) => dispatch(SetForCalendarView(payload))];
    const [inputIndex, setInputIndex] = useState(16);
@@ -38,9 +49,14 @@ export default Task = ({item, text, duration, actionObj, id}) => {
      setForCalendarView(!refRBSheetInput.current.state.modalVisible)
     }, [refRBSheetInput.current?.state.modalVisible]);
 
-   const completeTask = (target) => {
+   const deleteTip = (target) => {
         setTips(tips.filter((tip, i) => tip.id !== target));
     }
+
+    const deleteTodo = (target) => {
+        setTodosList(todosList.filter((todo, i) => todo.id !== target));
+    }
+
 
     const changeTaskDuration = (target, newDuration) => {
         setTasks(tasks.map((task, i) => {
@@ -76,6 +92,14 @@ export default Task = ({item, text, duration, actionObj, id}) => {
         return color;
       }
       
+      const changeTodoType = (target, newType) => {
+        const newTodos = [...todosList];
+        const index = newTodos.findIndex(todo => todo.id === target.id);
+        newTodos[index] = {...newTodos[index], type: newType};
+        setTodosList(newTodos);
+      }
+
+
 
 
 
@@ -114,7 +138,7 @@ export default Task = ({item, text, duration, actionObj, id}) => {
     // whenever duration changes, update the task
     useEffect(() => {
       setSliderValue(item.duration * 6.0)
-    }, item.duration)
+    }, [item.duration])
 
 
     const [sliderValue, setSliderValue] = useState(item.duration);
@@ -129,19 +153,28 @@ export default Task = ({item, text, duration, actionObj, id}) => {
    
    return(
       <>
-      <View style={[styles.item, {backgroundColor: color, paddingRight: (TILMode)? 5:15 }]}>
+      <View style={[styles.item, {backgroundColor: color, paddingRight: (notesMode || todosMode)? 5:15 }]}>
          <View style={styles.itemLeft}>
-         <TouchableOpacity onPress={() => (!TILMode)?setIconModalVisible(true):null}>
-            {!TILMode && <ActionType index={actionObj.index} stylesProp={styles.itemStyle} />}
-            {(TILMode && notesGenre == 'Language Spice') && <Lang style={ styles.itemStyle} width={22} color='white' height={22} />}
-            {(TILMode && notesGenre == 'Todo') && <Done onPress={()=>completeTask(id)} style={ styles.itemStyle} width={25} color='white' height={25} />}
-            {(TILMode && notesGenre == 'Self-Improvement') && <Light style={ styles.itemStyle} width={22} color='white' height={22} />}
+         <TouchableOpacity onPress={() => (!notesMode && !todosMode)?setIconModalVisible(true):(todosMode)?setEisenhourModalVisible(true):null}>
+            {!notesMode && !todosMode && <ActionType index={actionObj.index} stylesProp={styles.itemStyle} />}
+            {(notesMode && notesGenre == 'Language Spice') && <Lang style={ styles.itemStyle} width={22} color='white' height={22} />}
+            {(notesMode && notesGenre == 'BucketList') && <Done onPress={()=>deleteTip(id)} style={ styles.itemStyle} width={25} color='white' height={25} />}
+            {(notesMode && notesGenre == 'Self-Improvement') && <Light style={ styles.itemStyle} width={22} color='white' height={22} />}
+            {(todosMode && todosGenre == "In Progress") && <BulletPoint style={ styles.itemStyle} width={25} color='white' height={25} />}
+            {(todosMode && todosGenre == "Completed") && <CompleteTask onPress={()=>deleteTodo(id)} style={ styles.itemStyle} width={25} color='white' height={25} />}
             </TouchableOpacity>
-            <Text style={[styles.itemText, {maxWidth: (TILMode)? (!(['Language Spice', 'Todo', 'Self-Improvement'].includes(notesGenre))?'100%':'85%'):'80%'}]}>{(duration)?textDecorator(text):text}</Text>
+            <Text style={[styles.itemText, {maxWidth: (notesMode||todosMode)? (!(['Language Spice', 'Todo', 'Self-Improvement'].includes(notesGenre) || todosMode)?'100%':'85%'):'80%'}]}>{(duration)?textDecorator(text):text}</Text>
          </View>
-         <TouchableOpacity onPress={()=>{ refRBSheet.current.open(); }}>
-         <Progress.Pie  progress={(item.duration)} size={25} color='#f2f3f4' style={{display: (TILMode)? 'none': 'flex'}}  />
-         </TouchableOpacity>
+         {!(notesMode||todosMode) && <TouchableOpacity onPress={()=>{ refRBSheet.current.open(); }}>
+         <Progress.Pie  progress={(item.duration)} size={25} color='#f2f3f4' style={{display:  'flex'}}  />
+         </TouchableOpacity>}
+         {(!notesMode && todosMode) && (item.type !="done") 
+         &&
+         <TouchableOpacity onPress={()=>changeTodoType(item, 'done')}>
+         <Done  style={ styles.itemStyle} width={25} color='white' height={25} />
+          </TouchableOpacity>
+         }
+
       </View>
       <RBSheet
       ref={refRBSheet}
@@ -180,13 +213,14 @@ export default Task = ({item, text, duration, actionObj, id}) => {
     step={1/(12*60)}
   />
     </RBSheet>
-    <Modal
+
+    {!todosMode && !notesMode && <Modal
       animationType={"fade"}
       visible={iconModalVisible}
       transparent={true}
     >
       <StatusBar backgroundColor="rgba(0,0,0,0.3)" />
-      <Pressable style={{backgroundColor: 'rgba(0,0,0,0.3)', height: '100%'}} onPress={()=> setIconModalVisible(false)}>
+      <Pressable style={{backgroundColor: 'rgba(0,0,0,0.3)', height: '100%'}} onPress={()=> {setIconModalVisible(false);}}>
       <View style={{marginVertical: 120, borderRadius: 100, marginHorizontal: 20, backgroundColor: color, borderRadius: 40, }}>
       <ScrollView  contentContainerStyle={{flexDirection: 'row', alignItems: 'center', padding: 15, flexWrap: 'wrap', justifyContent: 'space-around', borderRadius: 40,
     }} showsVerticalScrollIndicator={false}>
@@ -209,7 +243,63 @@ export default Task = ({item, text, duration, actionObj, id}) => {
         </ScrollView>
         </View>
       </Pressable>
-    </Modal>
+    </Modal>}
+
+    {todosMode &&!notesMode && <Modal
+      animationType={"fade"}
+      visible={eisenhourModalVisible}
+      transparent={true}
+    >
+      <StatusBar backgroundColor="rgba(0,0,0,0.3)" />
+      <Pressable style={{backgroundColor: 'rgba(0,0,0,0.3)', height: '100%'}} onPress={()=> setEisenhourModalVisible(false)}>
+      <View  style={{flexDirection: 'column', alignItems: 'center', padding: 5, justifyContent: 'space-between', borderRadius: 40,
+    marginVertical: 120, borderRadius: 100, marginHorizontal: 20, backgroundColor: color, borderRadius: 50,}}>
+      {/* <TouchableOpacity style={{flexDirection: 'column', alignItems: 'center', marginHorizontal: 3, paddingHorizontal: 4, paddingVertical: 12, borderRadius: 60, marginVertical: 6, maxwidth: 250, backgroundColor: color}} onPress={()=>{ setEisenhourModalVisible(false); refRBSheetInput.current.open(); }}>
+      </TouchableOpacity> */}
+      <Text style={{color:'white', marginTop:15, fontFamily:'SemiBold', fontSize:20}}>The Eisenhour Matrix</Text>
+        <View style={{ borderWidth: 0, display: 'flex', flexDirection: 'row', justifyContent:'space-around', marginVertical: 15}}>
+        <Pressable key={"do"} style={({pressed})=>[{opacity:pressed ? 0.8 : 1}, 
+          {flexDirection: 'column', alignItems: 'center', marginHorizontal: 2, paddingHorizontal: 4, paddingVertical: 24,
+          borderRadius: 30, marginVertical: 6, marginHorizontal: 15, width: 100, height: 100, backgroundColor: (item.type != "do")?color:'#f1f2f3', borderColor: '#dadada',
+          borderWidth: 2}]} 
+          onPress={()=>{changeTodoType(item, "do"); setEisenhourModalVisible(false)}}>
+          <Do style={[ {color: (item.type == "do")?color:'#f1f2f3'}]} />
+          <Text style={[styles.itemText, { color:(item.type == "do")?color:'#f1f2f3', fontSize: 14, paddingTop: 2, paddingHorizontal: 13, textAlign: 'center'}]}>Do</Text>
+        </Pressable>
+        <Pressable key={"schedule"} style={({pressed})=>[{opacity:pressed ? 0.8 : 1}, 
+          {flexDirection: 'column', alignItems: 'center', marginHorizontal: 2, paddingHorizontal: 4, paddingVertical: 24,
+          borderRadius: 30, marginVertical: 6, marginHorizontal: 15, width: 100, height: 100, backgroundColor: (item.type != "schedule")?color:'#f1f2f3', borderColor: '#dadada',
+          borderWidth: 2}]} 
+          onPress={()=>{changeTodoType(item, "schedule"); setEisenhourModalVisible(false)}}>
+          <Schedule style={[ {color: (item.type == "schedule")?color:'#f1f2f3'}]} />
+          <Text style={[styles.itemText, { color:(item.type == "schedule")?color:'#f1f2f3', fontSize: 14, paddingTop: 2, paddingHorizontal: 13, textAlign: 'center'}]}>Schedule</Text>
+        </Pressable>
+        </View>
+        <View style={{ borderWidth: 0, display: 'flex', flexDirection: 'row', justifyContent:'space-between'}}>
+        <Pressable key={"delegate"} style={({pressed})=>[{opacity:pressed ? 0.8 : 1}, 
+          {flexDirection: 'column', alignItems: 'center', marginHorizontal: 2, paddingHorizontal: 4, paddingVertical: 24,
+          borderRadius: 30, marginVertical: 6, marginHorizontal: 15, width: 100, height: 100, backgroundColor: (item.type != "delegate")?color:'#f1f2f3', borderColor: '#dadada',
+          borderWidth: 2}]} 
+          onPress={()=>{changeTodoType(item, "delegate"); setEisenhourModalVisible(false)}}>
+          <Delegate style={[ {color: (item.type == "delegate")?color:'#f1f2f3'}]} />
+          <Text style={[styles.itemText, { color:(item.type == "delegate")?color:'#f1f2f3', fontSize: 14, paddingTop: 2, paddingHorizontal: 13, textAlign: 'center'}]}>Delegate</Text>
+        </Pressable>
+        <Pressable key={"delete"} style={({pressed})=>[{opacity:pressed ? 0.8 : 1}, 
+          {flexDirection: 'column', alignItems: 'center', marginHorizontal: 2, paddingHorizontal: 4, paddingVertical: 24,
+          borderRadius: 30, marginVertical: 6, marginBottom:10, marginHorizontal: 15, width: 100, height: 100, backgroundColor: (item.type != "delete")?color:'#f1f2f3', borderColor: '#dadada',
+          borderWidth: 2}]} 
+          onPress={()=>{changeTodoType(item, "delete"); setEisenhourModalVisible(false)}}>
+          <EDelete style={[ {color: (item.type == "delete")?color:'#f1f2f3'}]} />
+          <Text style={[styles.itemText, { color:(item.type == "delete")?color:'#f1f2f3', fontSize: 14, paddingTop: 2, paddingHorizontal: 13, textAlign: 'center'}]}>Delete</Text>
+        </Pressable>
+        </View>
+          <Pressable onPress={()=> changeTodoType(item, "untitled")} style={{backgroundColor: color, borderWidth:1, width:'80%', borderColor:'white', marginBottom:16, marginTop:12, borderRadius: 40, padding: 10}}>
+            <Text style={{color:'white', fontFamily: 'SemiBold', textAlign: 'center'}}> Not Sure? </Text>
+          </Pressable>
+        </View>
+      </Pressable>
+    </Modal>}
+
     <Modal
       animationType={"fade"}
       visible={svgModalVisible}

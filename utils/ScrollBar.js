@@ -29,12 +29,7 @@ export default ({
      scrollViewRef.current.scrollTo({x: 0, y: 1, animated: true});
      }, [selectedDate]);
   
-   // scroll to top whenever hideCalendar is true
-   useEffect(() => {
-     if (hideCalendar) {
-       scrollViewRef.current.scrollTo({x: 0, y: 1, animated: true});
-     }
-     }, [hideCalendar]);
+
 
     const [fadeAnim] = useState(
         new Animated.Value(shouldIndicatorHide ? 0 : 1),

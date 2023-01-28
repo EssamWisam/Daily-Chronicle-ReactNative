@@ -15,37 +15,42 @@ import PieScreen from './PieScreen';
 import Donut from '../assets/Donut.svg';
 import { BackHandler } from "react-native";
 import {  useSelector, useDispatch } from 'react-redux';
-import { SetColorMode } from '../redux/slices/colors';
+import { SetSettingsMode } from '../redux/slices/colors';
 import ColorPick from './components/ColorPick';
 import X from '../assets/X.svg';
 import { SetAllTasks } from '../redux/slices/notes';
-import { SetTILMode } from '../redux/slices/notes';
+import { SetNotesMode } from '../redux/slices/notes';
+import { SetTodosMode } from '../redux/slices/notes';
 import CalendarIcon from '../assets/Calendar.svg';
-
 
 export default HomeScreen = () => {
   const color = useSelector(state => state.colors.color)['hex']
   let now = new Date();
+  const navigation = useNavigation();
 
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [allTasks, setAllTasks] = [ useSelector(state => state.notes.allTasks), (payload) => dispatch(SetAllTasks(payload))];
-  //const [allTasks, setAllTasks] = useState({})
   const isKeyboardOpen = useKeyboardOpen();
   const [fullscreen, setFullscreen] = useState(false);
 
-  const  [TILMode, setTILMode] = [ useSelector(state => state.notes.TILMode), (payload) => dispatch(SetTILMode(payload))];
+  const  [notesMode, setNotesMode] = [ useSelector(state => state.notes.notesMode), (payload) => dispatch(SetNotesMode(payload))];
+  const [todosMode, setTodosMode] = [ useSelector(state => state.notes.todosMode), (payload) => dispatch(SetTodosMode(payload))];
+
   const dispatch = useDispatch();
-  const [colorMode, setColorMode] = [ useSelector(state => state.colors.colorMode), (payload) => dispatch(SetColorMode(payload))];
-  const [modalVisible, setModalVisible] = useState(false);
+  const [settingsMode, setSettingsMode] = [ useSelector(state => state.colors.settingsMode), (payload) => dispatch(SetSettingsMode(payload))];
+  const [pieMode, setPieMode] = useState(false);
   const notesGenre =  useSelector(state => state.notes.notesGenre)
+  const todosGenre =  useSelector(state => state.notes.todosGenre)
   const forCalendarView = useSelector(state => state.notes.forCalendarView)
 
 
   const calendarRef = useRef();
-  // print hello world when component mounts
   useEffect(() => {
     const date = new Date()
+    if(calendarRef.current){
     calendarRef.current.handleOnPressDay(date.getDate(), date.getMonth(), date.getFullYear())
+    }
+
   }, []);
 
   const dayStyleDecider = (date) => {
@@ -63,23 +68,25 @@ export default HomeScreen = () => {
   }
 
   const hideCalendar = useMemo(() => (isKeyboardOpen && forCalendarView) || fullscreen, [isKeyboardOpen, fullscreen, forCalendarView]);
-
-  const navigation = useNavigation()
   function handleBackButtonClick() {
     if(fullscreen){
       setFullscreen(false);
       return true;
     }
-    else if (modalVisible){
-      setModalVisible(false);
+    else if (pieMode){
+      setPieMode(false);
       return true;
     }
-    else if (colorMode){
-      setColorMode(false);
+    else if (settingsMode){
+      setSettingsMode(false);
       return true;
     }
-    else if (TILMode){
-      setTILMode(false);
+    else if (notesMode){
+      setNotesMode(false);
+      return true;
+    }
+    else if (todosMode){
+      setTodosMode(false);
       return true;
     }
     else {
@@ -93,48 +100,57 @@ export default HomeScreen = () => {
     return () => {
       BackHandler.removeEventListener("hardwareBackPress", handleBackButtonClick);
     };
-  }, [fullscreen, modalVisible, colorMode, TILMode]);
+  }, [fullscreen, pieMode, settingsMode, notesMode, todosMode]);
 
   return (
     <>
     <StatusBar style="light" />
-    <Pressable onPress={()=>setColorMode(false)} style={{ flex: 1, backgroundColor: 'transparent', height: "100%", width:"100%" }}>
-    {colorMode && <View style={{ flex: 1, backgroundColor: 'transparent', height: "100%", width:"100%", position: 'absolute', zIndex: 4 }}></View>}
-    <View style={[styles.container, { backgroundColor: color }]}>
+    {
+      // The following pressable and view are to detect presses outside the settings pop up 
+    }
+    <Pressable onPress={()=>setSettingsMode(false)} style={{ flex: 1, backgroundColor: 'transparent', height: "100%", width:"100%" }}>
+    {settingsMode && <View style={{ flex: 1, backgroundColor: 'transparent', height: "100%", width:"100%", position: 'absolute', zIndex: 4 }}></View>}
+    <View style={[styles.container, { backgroundColor: color }]}> 
+    {
+      // The header section starts here
+    }
         <View style={[styles.header]}>
           <View style={[styles.headerLeft]}>
-            {(!hideCalendar || TILMode ) ?
+            {(!hideCalendar || notesMode || todosMode ) ?
               <TouchableOpacity onPress={() => {Keyboard.dismiss(); navigation.openDrawer();}}>
                 <Ham width={35} height={35} style={[styles.ham, { color: 'white' }]}></Ham>
               </TouchableOpacity> :
-              (!TILMode) ?
+              (!notesMode && !todosMode) ?
               <TouchableOpacity onPress={() => { setFullscreen(false); Keyboard.dismiss() }}>
                 <ThickLeft width={20} height={20} style={[styles.left, { color: 'white' }]}></ThickLeft>
               </TouchableOpacity>:
                null
               }
             <Text style={[styles.headerText, { color: 'white', }]}>
-              {(!hideCalendar && !TILMode) ? (getGreeting()) : (!TILMode)? convertDate(selectedDate): notesGenre}
+              {(!hideCalendar && !notesMode && !todosMode) ? (getGreeting()) : (!notesMode && !todosMode)? convertDate(selectedDate): (notesMode)? notesGenre: todosGenre}
             </Text>
           </View>
           <View style={[styles.headerRight]}>
-            <TouchableOpacity onPress={()=>setModalVisible(!modalVisible)}>
+            <TouchableOpacity onPress={()=>setPieMode(!pieMode)}>
               {
-                (!modalVisible)? 
-                !hideCalendar && !TILMode && <Donut width={27} height={27} style={[styles.headerText, { color: 'white',marginRight: 10 }]}/>
+                (!pieMode)? 
+                !hideCalendar && !notesMode && !todosMode && <Donut width={27} height={27} style={[styles.headerText, { color: 'white',marginRight: 10 }]}/>
                 :
-                !hideCalendar && !TILMode && <CalendarIcon width={25} height={25} style={[styles.headerText, { color: 'white',marginRight: 13 }]}/>
+                !hideCalendar && !notesMode && !todosMode && <CalendarIcon width={25} height={25} style={[styles.headerText, { color: 'white',marginRight: 13 }]}/>
                 }
             </TouchableOpacity>
           </View>
         </View>
         <View style={[styles.instr]}>
-          {!TILMode && <Text style={[styles.instrText]}> 
+          {!notesMode && !todosMode && <Text style={[styles.instrText]}> 
            {((!hideCalendar)?<Text><Text style={{ color: 'white', fontFamily: 'SemiBold' }}>{365 - getDay()} days</Text> left until {new Date().getFullYear()+1}</Text>: <Text style={{ color: 'white', fontFamily: 'Regular' }}>Start logging your day!</Text>)}
           </Text>}
         </View>
-        <PieScreen  currentDate={selectedDate.toISOString().split('T')[0]}  modalVisible={modalVisible} dateText={convertDate(selectedDate)} /> 
-        <View style={[styles.calendarWrapper, { display: (hideCalendar || TILMode || modalVisible) ? 'none' : 'flex' }]}>
+        {
+        // After the header either PieScreen or CalendarPicker are rendered depending on if pieMode is set
+        }
+        <PieScreen  currentDate={selectedDate.toISOString().split('T')[0]}  pieMode={pieMode} dateText={convertDate(selectedDate)} /> 
+        {!(hideCalendar||notesMode||pieMode || todosMode) && <View style={[styles.calendarWrapper, { display:  'flex' }]}>
           <CalendarPicker
             previousComponent={<Left width={24} height={24} style={{ color: 'black' }} ></Left>}
             nextComponent={<Right width={24} height={24} style={{ color: 'black' }} ></Right>}
@@ -151,19 +167,17 @@ export default HomeScreen = () => {
             //todayBackgroundColor={color + "a4"}
             ref={calendarRef}
           />
-        </View>
-        {!modalVisible && <NoteView selectedDate={selectedDate.toISOString().split('T')[0]}  hideCalendar={hideCalendar} setFullscreen={setFullscreen}  />}
+        </View>}
+        {
+        // The notes component gets rendered if notesMode is set 
+        }
+        {!pieMode  && <NoteView selectedDate={selectedDate.toISOString().split('T')[0]}  hideCalendar={hideCalendar} setFullscreen={setFullscreen}  />}
     </View>
     </Pressable>
-    { colorMode && 
-    // <Modal  animationType={"slide"} transparent={true} visible={colorMode} onRequestClose={() => {setColorMode(!colorMode);}}>
+    { settingsMode && 
     <View style={[styles.colorContainer]}>
-      <TouchableOpacity onPress={() => setColorMode(false)} >
-      <X width={30} height={30} color="#bababa" style={styles.exit}  />
-      </TouchableOpacity>
       <ColorPick />
     </View>
-    // </Modal>
     }
 
     </>

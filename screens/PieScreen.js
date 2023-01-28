@@ -4,7 +4,7 @@ import {View, StyleSheet, Text, ScrollView, Modal, TouchableOpacity } from "reac
 import { useSelector } from 'react-redux';
 import { hexToHsv } from '../utils/taskSetup';
 
-export default PieScreen = ({ currentDate, modalVisible, dateText}) => {
+export default PieScreen = ({ currentDate, pieMode, dateText}) => {
   const actionObjects = useSelector(state => state.notes.actionObjects)
   const actionColors = actionObjects.map((action) => action.color);
   const values = actionObjects.map((action) => action.value);
@@ -16,8 +16,6 @@ export default PieScreen = ({ currentDate, modalVisible, dateText}) => {
   return 'hsl(' + new_h + ', ' + s + '%, ' + l + '%)'
   }
   );
-
-
   
   const allTasks = useSelector(state => state.notes.allTasks)
 
@@ -62,49 +60,55 @@ const renderDot = color => {
   return (
     <View style={{height: 10,width: 10,borderRadius: 5,backgroundColor: color, marginRight: 10, }} />
   );
-};
+};  
 
-const renderLegendComponent = () => {
-  const RowComponent = ({label1,  percent1, color1, }) => {
-    return (
-      <View style={[styles.rowStyle, {marginBottom: 9}]}>
-      <View style={{flexDirection: 'row', alignItems: 'center',  marginHorizontal: 10, marginVertical: 4}}>
-        {renderDot(color1)}
-        <Text style={{color: 'black', fontFamily: 'Bold'}}>{label1}: <Text style={{color: '#3a3a3a'}}>{percent1}%</Text></Text>
-      </View>
-    </View>
-    )
-  }
 
   if(pieData.length % 2 != 0) {
     pieData.push({value: '', color: 'transparent', gradientCenterColor: 'transparent', label: ''})
   }
-  const pieDataPairs = pieData.reduce(function (rows, key, index) {
-    return (index % 2 == 0 ? rows.push([key])
-      : rows[rows.length-1].push(key)) && rows;
-  }, []);
+
+  const renderLegendComponent = () => {
+    const RowComponent = ({label1, label2, percent1, percent2, color1, color2}) => {
+      // check label1 is longer than 10 characters
+      if(label1.length > 8) {
+        label1 = label1.substring(0, 8) + '... '
+      }
+      if(label2 && label2.length > 8) {
+        label2 = label2.substring(0, 8) + '... '
+      }
+
+      return (
+        <View style={[styles.rowStyle, {marginBottom: 12, marginLeft: 3, borderWidth: 0}]}>
+        <View style={{flexDirection: 'row', alignItems: 'center', width: 120, marginRight: 60,}}>
+          {renderDot(color1)}
+          <Text style={{color: 'black', fontFamily: 'SemiBold', width: 100}}>{label1}: {percent1}%</Text>
+        </View>
+        {label2 && <View style={{flexDirection: 'row', alignItems: 'center', width: 120}}>
+          {renderDot(color2)}
+          <Text style={{color: 'black', fontFamily: 'SemiBold', width: 100}}>{label2}: {percent2}%</Text>
+        </View>}
+      </View>
+      )
+    }
   
-  let pieRows = [];
-  for (var i = pieDataPairs.length-1; i >= 0; i--) {
-    if(pieDataPairs[i][0].value != '') {
-      pieRows.push(<RowComponent key={i} label1={pieDataPairs[i][0].label}  
-        color1={pieDataPairs[i][0].color} 
-        percent1={pieDataPairs[i][0].value} />);
-      }
-  }
-  // Technical Debt: Forcing a double layout wasn't the best idea
-  for (var i = pieDataPairs.length-1; i >= 0; i--) {
-    if(pieDataPairs[i][1].value != '') {
-    pieRows.push(<RowComponent key={i} label1={pieDataPairs[i][1].label}   color1={pieDataPairs[i][1].color} 
-       percent1={pieDataPairs[i][1].value} />);
-      }
-
-}
-
+    if(pieData.length % 2 != 0) {
+      pieData.push({value: '', color: 'transparent', gradientCenterColor: 'transparent', label: ''})
+    }
+    const pieDataPairs = pieData.reduce(function (rows, key, index) {
+      return (index % 2 == 0 ? rows.push([key])
+        : rows[rows.length-1].push(key)) && rows;
+    }, []);
+    
+    let pieRows = [];
+    for (var i = 0; i < pieDataPairs.length; i++) {
+        pieRows.push(<RowComponent key={i} label1={pieDataPairs[i][0].label} label2={pieDataPairs[i][1].label} 
+          color1={pieDataPairs[i][0].color} 
+          color2={pieDataPairs[i][1].color} percent1={pieDataPairs[i][0].value} percent2={pieDataPairs[i][1].value}/>);
+    }
 
   return   (
   <View >
-  <ScrollView  contentContainerStyle={{flexDirection: 'row', alignItems: 'center',  marginHorizontal: 25, flexWrap: 'wrap', height: 290}}>
+  <ScrollView  contentContainerStyle={{flexDirection: 'row', alignItems: 'center',  borderWidth: 0,  marginHorizontal: 25, flexWrap: 'wrap', height: 290}}>
     {pieRows}
   </ScrollView>
   </View>)
@@ -112,11 +116,10 @@ const renderLegendComponent = () => {
 };
 
 
-//     borderTopRightRadius: 25,
 
 return (
   <View style={{ paddingVertical: 10, backgroundColor: color, flex: 1, marginTop: 10, marginBottom: -20,
-    display: (modalVisible)?'flex':'none', zIndex: 999}}>
+    display: (pieMode)?'flex':'none', zIndex: 999}}>
      <View style={{  padding: 16, borderRadius: 25, backgroundColor: '#f2f3f4', height: '100%', width: '100%',}}>
       <Text style={{color: 'black', fontSize: 19, fontFamily: 'SemiBold', textAlign: 'center', color: color}}> <Text style={{color: "black"}}>Statistics of the Month as of </Text>{dateText}</Text>
       {(sum != -1 && pieData.length>1)?<>
