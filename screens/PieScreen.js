@@ -58,7 +58,7 @@ export default PieScreen = ({ currentDate, pieMode, dateText}) => {
  
 const renderDot = color => {
   return (
-    <View style={{height: 10,width: 10,borderRadius: 5,backgroundColor: color, marginRight: 10, }} />
+    <View style={{height: 10,width: 10,borderRadius: 5,backgroundColor: color, marginLeft:5, marginRight: 10, }} />
   );
 };  
 
@@ -81,11 +81,11 @@ const renderDot = color => {
         <View style={[styles.rowStyle, {marginBottom: 12, marginLeft: 3, borderWidth: 0}]}>
         <View style={{flexDirection: 'row', alignItems: 'center', width: 120, marginRight: 60,}}>
           {renderDot(color1)}
-          <Text style={{color: 'black', fontFamily: 'SemiBold', width: 100}}>{label1}: {percent1}%</Text>
+          <Text allowFontScaling={false} style={{color: 'black', fontFamily: 'SemiBold', width: 100, fontSize: 11}}>{label1}: {percent1}%</Text>
         </View>
         {label2 && <View style={{flexDirection: 'row', alignItems: 'center', width: 120}}>
           {renderDot(color2)}
-          <Text style={{color: 'black', fontFamily: 'SemiBold', width: 100}}>{label2}: {percent2}%</Text>
+          <Text allowFontScaling={false} style={{color: 'black', fontFamily: 'SemiBold', width: 100, fontSize: 11}}>{label2}: {percent2}%</Text>
         </View>}
       </View>
       )
@@ -121,7 +121,7 @@ return (
   <View style={{ paddingVertical: 10, backgroundColor: color, flex: 1, marginTop: 10, marginBottom: -20,
     display: (pieMode)?'flex':'none', zIndex: 999}}>
      <View style={{  padding: 16, borderRadius: 25, backgroundColor: '#f2f3f4', height: '100%', width: '100%',}}>
-      <Text style={{color: 'black', fontSize: 19, fontFamily: 'SemiBold', textAlign: 'center', color: color}}> <Text style={{color: "black"}}>Statistics of the Month as of </Text>{dateText}</Text>
+      <Text allowFontScaling={false} style={{color: 'black', fontSize: 14, fontFamily: 'SemiBold', textAlign: 'center', color: color}}> <Text allowFontScaling={false} style={{color: "black"}}>Statistics of the Month as of </Text>{dateText}</Text>
       {(sum != -1 && pieData.length>1)?<>
       <View style={{padding: 20, alignItems: 'center'}}>
         <PieChart
@@ -137,8 +137,8 @@ return (
           centerLabelComponent={() => {
             return (
               <View style={{justifyContent: 'center', alignItems: 'center'}}>
-                <Text style={{fontSize: 22, color: 'black', fontFamily: 'Bold'}}> {big.value}%</Text>
-                <Text style={{fontSize: 14, color: 'black', fontFamily: 'Regular'}}>{big.label}</Text>
+                <Text allowFontScaling={false} style={{fontSize: 21, color: 'black', fontFamily: 'Bold'}}> {big.value}%</Text>
+                <Text allowFontScaling={false} style={{fontSize: 13, color: 'black', fontFamily: 'Regular'}}>{big.label}</Text>
               </View>
             );
           }}
@@ -146,7 +146,7 @@ return (
       </View>
       {renderLegendComponent()}
       </>
-      : <Text style={{textAlign: 'center', fontFamily: 'Regular', color: '#696969', paddingTop: 20}}> {"Looks like you haven't done much so far.\n \n Remember that you need to be logging times of labeled activities to use this feature."}</Text>}
+      : <Text allowFontScaling={false} style={{textAlign: 'center', fontFamily: 'Regular', color: '#696969', paddingTop: 20}}> {"Looks like you haven't done much so far.\n \n Remember that you need to be logging times of labeled activities to use this feature."}</Text>}
     </View>
   </View>);
 }

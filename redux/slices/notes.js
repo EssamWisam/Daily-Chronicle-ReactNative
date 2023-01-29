@@ -25,12 +25,7 @@ const initialState = {
   notesGenre: "Memo",     // The default folder for notes
   todosGenre: "Progress",  // The default folder for todos
   todosList: [
-    {text: "Sleeping", type:"untitled" , duration: 0.0,  action: {}, id:'01'}, {text: "Cooking", type:"untitled", duration: 0.0,  action: {}, id:'071' },
-    {text: "Dreaming", type:"do" , duration: 0.0,  action: {}, id:'012'}, {text: "Flying", type:"do" },
-    {text: "Studing", type:"schedule" , duration: 0.0,  action: {}, id:'031'}, {text: "Whying", type:"schedule" , duration: 0.0,  action: {}, id:'081'},
-    {text: "Checking", type:"delegate" , duration: 0.0,  action: {}, id:'041'}, {text: "Swirl", type:"delegate", duration: 0.0,  action: {}, id:'091' },
-    {text: "Ending", type:"delete" , duration: 0.0,  action: {}, id:'051'}, {text: "Malzing", type:"delete" , duration: 0.0,  action: {}, id:'001'},
-    {text: "Englishing", type:"done" , duration: 0.0,  action: {}, id:'061'}, {text: "Sleep", type:"done" , duration: 0.0,  action: {}, id:'0001'},
+
   ],
   actionObjects: [
     {name: 'Praying', value: 0.0, color: randomColor(), index: 0, id: 'Praying001'},

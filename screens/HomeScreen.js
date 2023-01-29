@@ -53,6 +53,15 @@ export default HomeScreen = () => {
 
   }, []);
 
+
+  // whenever noteMode or todosMode is true, pieMode is false
+  useEffect(() => {
+    if (notesMode || todosMode){
+      setPieMode(false);
+    }
+  }, [notesMode, todosMode]);
+  
+
   const dayStyleDecider = (date) => {
     if (allTasks[date.toISOString().split('T')[0]] && allTasks[date.toISOString().split('T')[0]].length > 0) {
       return {
@@ -126,7 +135,7 @@ export default HomeScreen = () => {
               </TouchableOpacity>:
                null
               }
-            <Text style={[styles.headerText, { color: 'white', }]}>
+            <Text allowFontScaling={false} style={[styles.headerText, { color: 'white', }]}>
               {(!hideCalendar && !notesMode && !todosMode) ? (getGreeting()) : (!notesMode && !todosMode)? convertDate(selectedDate): (notesMode)? notesGenre: todosGenre}
             </Text>
           </View>
@@ -142,8 +151,8 @@ export default HomeScreen = () => {
           </View>
         </View>
         <View style={[styles.instr]}>
-          {!notesMode && !todosMode && <Text style={[styles.instrText]}> 
-           {((!hideCalendar)?<Text><Text style={{ color: 'white', fontFamily: 'SemiBold' }}>{365 - getDay()} days</Text> left until {new Date().getFullYear()+1}</Text>: <Text style={{ color: 'white', fontFamily: 'Regular' }}>Start logging your day!</Text>)}
+          {!notesMode && !todosMode && <Text allowFontScaling={false} style={[styles.instrText]}> 
+           {((!hideCalendar)?<Text><Text allowFontScaling={false} style={{ color: 'white', fontFamily: 'SemiBold' }}>{365 - getDay()} days</Text> left until {new Date().getFullYear()+1}</Text>: <Text allowFontScaling={false} style={{ color: 'white', fontFamily: 'Regular' }}>Start logging your day!</Text>)}
           </Text>}
         </View>
         {
@@ -158,7 +167,7 @@ export default HomeScreen = () => {
             monthTitleStyle={{ fontFamily: 'Bold', color: color, fontSize: 16 }}
             yearTitleStyle={{ fontFamily: 'Bold', color: 'black', fontSize: 16 }}
             selectedDayStyle={{ backgroundColor: color, borderWidth: 3, borderColor: color, fontSize: 16, shadowColor: color }}
-            selectedDayTextStyle={{ fontFamily: 'Bold', color: 'white' }}
+            selectedDayTextStyle={{ fontFamily: 'SemiBold', color: 'white' }}
             dayLabelsWrapper={{ borderBottomColor: color + "99", borderTopColor: color + "99", borderBottomWidth: 0, borderTopWidth: 0 }}
             maxDate={now}
             minDate={new Date(Date.now() - 24 * 3600 * 1000 * 365 * 99)}
@@ -211,7 +220,7 @@ const styles = StyleSheet.create({
   },
   headerText: {
     fontFamily: 'SemiBold',
-    fontSize: 29,
+    fontSize: 27,
     paddingHorizontal: 10,
     textAlign: 'left'
   },
@@ -222,7 +231,7 @@ const styles = StyleSheet.create({
   },
   instrText: {
     fontFamily: 'Regular',
-    fontSize: 15,
+    fontSize: 14,
     textAlign: 'left',
     paddingHorizontal: 14,
     color: '#ededed',

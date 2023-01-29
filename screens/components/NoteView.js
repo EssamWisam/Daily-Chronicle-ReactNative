@@ -51,19 +51,19 @@ export default NoteView = ({ selectedDate, hideCalendar, setFullscreen }) => {
 
     TextElement = ()=> {
       if (type == 'do') {
-        return <Text style={{color: '#f2f3f4', fontSize: 27,  fontFamily:'SemiBold', marginVertical: 6}}>Do</Text>
+        return <Text allowFontScaling={false} style={{color: '#f2f3f4', fontSize: 27,  fontFamily:'SemiBold', marginVertical: 6}}>Do</Text>
       }
       else if (type == 'schedule') {
-        return <Text style={{color: '#f2f3f4', fontSize: 27,  fontFamily:'SemiBold', marginVertical: 6}}>Schedule</Text>
+        return <Text allowFontScaling={false} style={{color: '#f2f3f4', fontSize: 27,  fontFamily:'SemiBold', marginVertical: 6}}>Schedule</Text>
       }
       else if (type == 'delegate') {
-        return <Text style={{color: '#f2f3f4', fontSize: 27,  fontFamily:'SemiBold', marginVertical: 6}}>Delegate</Text>
+        return <Text allowFontScaling={false} style={{color: '#f2f3f4', fontSize: 27,  fontFamily:'SemiBold', marginVertical: 6}}>Delegate</Text>
       }
       else if (type == 'delete') {
-        return <Text style={{color: '#f2f3f4', fontSize: 27,  fontFamily:'SemiBold', marginVertical: 6}}>Delete</Text>
+        return <Text allowFontScaling={false} style={{color: '#f2f3f4', fontSize: 27,  fontFamily:'SemiBold', marginVertical: 6}}>Delete</Text>
       }
       else if (type=='untitled'){
-        return <Text style={{color: '#f2f3f4', fontSize: 27,  fontFamily:'SemiBold', marginVertical: 6}}>Untitled</Text>
+        return <Text allowFontScaling={false} style={{color: '#f2f3f4', fontSize: 27,  fontFamily:'SemiBold', marginVertical: 6}}>Untitled</Text>
       }
       else {
         return null
@@ -213,7 +213,7 @@ export default NoteView = ({ selectedDate, hideCalendar, setFullscreen }) => {
         {(!(hideCalendar || notesMode || todosMode) && (tasks.length!==0))?
          <View style={styles.up}><TouchableOpacity onPress={()=>setFullscreen(true)}><Up style={[styles.sectionTitle, {color: color}]}></Up></TouchableOpacity></View>
          :
-         <View style={styles.up}><Text style={[styles.sectionTitleText, {display: (hideCalendar || notesMode ||todosMode)? 'none': 'flex'}]}>Start Logging Your Day!</Text></View>}
+         <View style={styles.up}><Text allowFontScaling={false} style={[styles.sectionTitleText, {display: (hideCalendar || notesMode ||todosMode)? 'none': 'flex'}]}>Start Logging Your Day!</Text></View>}
       <View style={{height: (todosMode && todosGenre=="Completed")?height:(height-120), borderWidth: 0, }}>
       <ScrollBar style={styles.taskWrapper}
         hideTimeout	={500}
@@ -259,7 +259,7 @@ export default NoteView = ({ selectedDate, hideCalendar, setFullscreen }) => {
       </ScrollBar>
       </View>
       { ((!notesMode && !todosMode)||notesMode|| (todosMode && todosGenre!="Completed")) && <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={[styles.writeTaskWrapper, {backgroundColor: (notesMode || todosMode)? color:'#f2f3f4'}]}>
-        <TextInput style={[styles.input, {backgroundColor: (notesMode || todosMode)? '#f2f3f464': 'white'}, {borderColor: (notesMode || todosMode)? '#f2f3f4':'#ededed'}, {color: (notesMode || todosMode)? 'white':'black'}]} blurOnSubmit={false} 
+        <TextInput allowFontScaling={false} style={[styles.input, {backgroundColor: (notesMode || todosMode)? '#f2f3f464': 'white'}, {borderColor: (notesMode || todosMode)? '#f2f3f4':'#ededed'}, {color: (notesMode || todosMode)? 'white':'black'}]} blurOnSubmit={false} 
         placeholder={(!notesMode && !todosMode)?"What did you do?": (todosMode)?"What's your next todo?":"What's your next note?"} placeholderTextColor={(notesMode || todosMode)? '#f2f3f4':'#708090'}
           onChangeText={text => setTask(text)} value={task} onSubmitEditing={() => { handleAddTask() }}   ref={inputRef}
           maxLength={140}
@@ -298,7 +298,7 @@ export default NoteView = ({ selectedDate, hideCalendar, setFullscreen }) => {
         }}>
         <Delete  width={27} height={27} color={color} />
         </TouchableOpacity>
-        <TextInput style={[{ paddingVertical: 15, paddingHorizontal: 13, backgroundColor: '#FFF', marginVertical: 20, marginHorizontal: 10,
+        <TextInput allowFontScaling={false} style={[{ paddingVertical: 15, paddingHorizontal: 13, backgroundColor: '#FFF', marginVertical: 20, marginHorizontal: 10,
     borderRadius: 60, borderWidth: 2, borderColor: color, width: '70%', fontFamily: 'Regular',}]} blurOnSubmit={false} 
         placeholderTextColor={'#708090'}
           onChangeText={text => setRBText(text)} value={RBText} onSubmitEditing={() => { editItem() }}  

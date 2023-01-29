@@ -155,7 +155,7 @@ export default Task = ({item, text, duration, actionObj, id}) => {
       <>
       <View style={[styles.item, {backgroundColor: color, paddingRight: (notesMode || todosMode)? 5:15 }]}>
          <View style={styles.itemLeft}>
-         <TouchableOpacity onPress={() => (!notesMode && !todosMode)?setIconModalVisible(true):(todosMode)?setEisenhourModalVisible(true):null}>
+         <TouchableOpacity onPress={() => (!notesMode && !todosMode)?setIconModalVisible(true):(todosMode & todosGenre!='Completed')?setEisenhourModalVisible(true):null}>
             {!notesMode && !todosMode && <ActionType index={actionObj.index} stylesProp={styles.itemStyle} />}
             {(notesMode && notesGenre == 'Language Spice') && <Lang style={ styles.itemStyle} width={22} color='white' height={22} />}
             {(notesMode && notesGenre == 'BucketList') && <Done onPress={()=>deleteTip(id)} style={ styles.itemStyle} width={25} color='white' height={25} />}
@@ -163,7 +163,7 @@ export default Task = ({item, text, duration, actionObj, id}) => {
             {(todosMode && todosGenre == "In Progress") && <BulletPoint style={ styles.itemStyle} width={25} color='white' height={25} />}
             {(todosMode && todosGenre == "Completed") && <CompleteTask onPress={()=>deleteTodo(id)} style={ styles.itemStyle} width={25} color='white' height={25} />}
             </TouchableOpacity>
-            <Text style={[styles.itemText, {maxWidth: (notesMode||todosMode)? (!(['Language Spice', 'Todo', 'Self-Improvement'].includes(notesGenre) || todosMode)?'100%':'85%'):'80%'}]}>{(duration)?textDecorator(text):text}</Text>
+            <Text allowFontScaling={false} style={[styles.itemText, {maxWidth: (notesMode||todosMode)? (!(['Language Spice', 'Todo', 'Self-Improvement'].includes(notesGenre) || todosMode)?'100%':'85%'):'80%'}]}>{(duration)?textDecorator(text):text}</Text>
          </View>
          {!(notesMode||todosMode) && <TouchableOpacity onPress={()=>{ refRBSheet.current.open(); }}>
          <Progress.Pie  progress={(item.duration)} size={25} color='#f2f3f4' style={{display:  'flex'}}  />
@@ -197,8 +197,8 @@ export default Task = ({item, text, duration, actionObj, id}) => {
         }
       }}
     >
-      <Text style={{fontFamily: 'Regular', margin: 10, textAlign: 'center', fontSize: 15}}> How long did it take?</Text>
-      <Text style={{fontFamily: 'SemiBold', margin: 0, textAlign: 'center', fontSize: 15}}> {convertToHours(sliderValue)}</Text>
+      <Text allowFontScaling={false} style={{fontFamily: 'Regular', margin: 10, textAlign: 'center', fontSize: 13}}> How long did it take?</Text>
+      <Text allowFontScaling={false} style={{fontFamily: 'SemiBold', margin: 0, textAlign: 'center', fontSize: 13}}> {convertToHours(sliderValue)}</Text>
     <Slider
     style={[{ backgroundColor: '#f1f2f3', width: '90%', paddingBottom: 5, paddingTop: 5}]}
     minimumValue={0}
@@ -221,26 +221,29 @@ export default Task = ({item, text, duration, actionObj, id}) => {
     >
       <StatusBar backgroundColor="rgba(0,0,0,0.3)" />
       <Pressable style={{backgroundColor: 'rgba(0,0,0,0.3)', height: '100%'}} onPress={()=> {setIconModalVisible(false);}}>
-      <View style={{marginVertical: 120, borderRadius: 100, marginHorizontal: 20, backgroundColor: color, borderRadius: 40, }}>
-      <ScrollView  contentContainerStyle={{flexDirection: 'row', alignItems: 'center', padding: 15, flexWrap: 'wrap', justifyContent: 'space-around', borderRadius: 40,
+      <View style={{marginVertical: 120, borderRadius: 100, marginHorizontal: 20, backgroundColor: color, borderRadius: 40, }}> 
+
+      <ScrollView  contentContainerStyle={{flexDirection: 'row',  alignItems: 'center', padding: 15, flexWrap: 'wrap', justifyContent: 'space-around', borderRadius: 40,
     }} showsVerticalScrollIndicator={false}>
-      <TouchableOpacity style={{flexDirection: 'column', alignItems: 'center', marginHorizontal: 3, paddingHorizontal: 4, paddingVertical: 12, borderRadius: 60, marginVertical: 6, maxwidth: 250, backgroundColor: color}} onPress={()=>{ setIconModalVisible(false); refRBSheetInput.current.open(); }}>
-      <Add  width={24} height={24} color={'#f1f2f3'} />
-      <Text style={[styles.itemText, {color: '#f1f2f3', fontSize: 11, paddingTop: 2, textAlign: 'center'}]}>Add Action</Text>
-      </TouchableOpacity>
+
         {actionObjects.map((action, i) => {
           return (
+            
             <Pressable key={action.id} style={({pressed})=>[{opacity:pressed ? 0.8 : 1}, 
               {flexDirection: 'column', alignItems: 'center', marginHorizontal: 2, paddingHorizontal: 4, paddingVertical: 12,
-             borderRadius: 60, marginVertical: 6, maxwidth: 200, minWidth: 100, backgroundColor: (action.id !=item.action.id)?color:'#f1f2f3', borderColor: '#dadada',
+             borderRadius: 60, marginVertical: 6, maxwidth: 200, minWidth: 50, backgroundColor: (action.id !=item.action.id)?color:'#f1f2f3', borderColor: '#dadada',
               borderWidth: 2}]} 
               onLongPress={()=>deleteAction(action.id)} onPress={()=>{changeTaskAction(id, action); setIconModalVisible(false)}}>
               <ActionType index={action.index} stylesProp={[ {color: (action.id ==item.action.id)?color:'#f1f2f3'}]} />
-              <Text style={[styles.itemText, { color:(action.id ==item.action.id)?color:'#f1f2f3', fontSize: 11, paddingTop: 2, paddingHorizontal: 13, textAlign: 'center'}]}>{action.name}</Text>
+              <Text allowFontScaling={false} style={[styles.itemText, { color:(action.id ==item.action.id)?color:'#f1f2f3', fontSize: 9, paddingTop: 2, paddingHorizontal: 13, textAlign: 'center'}]}>{action.name}</Text>
             </Pressable>
           )
     })}
         </ScrollView>
+        <TouchableOpacity style={{flexDirection: 'column', alignItems: 'center', marginHorizontal: 3, paddingHorizontal: 4, paddingVertical: 6, paddingTop: 9, borderRadius: 60, marginVertical: 2, maxwidth: 250, backgroundColor: color, }} onPress={()=>{ setIconModalVisible(false); refRBSheetInput.current.open(); }}>
+      <Add  width={24} height={24} color={'#f1f2f3'} />
+      <Text allowFontScaling={false} style={[styles.itemText, {color: '#f1f2f3', fontSize: 11, paddingTop: 2, textAlign: 'center'}]}>Add Action</Text>
+      </TouchableOpacity>
         </View>
       </Pressable>
     </Modal>}
@@ -256,7 +259,7 @@ export default Task = ({item, text, duration, actionObj, id}) => {
     marginVertical: 120, borderRadius: 100, marginHorizontal: 20, backgroundColor: color, borderRadius: 50,}}>
       {/* <TouchableOpacity style={{flexDirection: 'column', alignItems: 'center', marginHorizontal: 3, paddingHorizontal: 4, paddingVertical: 12, borderRadius: 60, marginVertical: 6, maxwidth: 250, backgroundColor: color}} onPress={()=>{ setEisenhourModalVisible(false); refRBSheetInput.current.open(); }}>
       </TouchableOpacity> */}
-      <Text style={{color:'white', marginTop:15, fontFamily:'SemiBold', fontSize:20}}>The Eisenhour Matrix</Text>
+      <Text allowFontScaling={false} style={{color:'white', marginTop:15, fontFamily:'SemiBold', fontSize:18}}>The Eisenhour Matrix</Text>
         <View style={{ borderWidth: 0, display: 'flex', flexDirection: 'row', justifyContent:'space-around', marginVertical: 15}}>
         <Pressable key={"do"} style={({pressed})=>[{opacity:pressed ? 0.8 : 1}, 
           {flexDirection: 'column', alignItems: 'center', marginHorizontal: 2, paddingHorizontal: 4, paddingVertical: 24,
@@ -264,7 +267,7 @@ export default Task = ({item, text, duration, actionObj, id}) => {
           borderWidth: 2}]} 
           onPress={()=>{changeTodoType(item, "do"); setEisenhourModalVisible(false)}}>
           <Do style={[ {color: (item.type == "do")?color:'#f1f2f3'}]} />
-          <Text style={[styles.itemText, { color:(item.type == "do")?color:'#f1f2f3', fontSize: 14, paddingTop: 2, paddingHorizontal: 13, textAlign: 'center'}]}>Do</Text>
+          <Text allowFontScaling={false} style={[styles.itemText, { color:(item.type == "do")?color:'#f1f2f3', fontSize: 12, paddingTop: 2, paddingHorizontal: 13, textAlign: 'center'}]}>Do</Text>
         </Pressable>
         <Pressable key={"schedule"} style={({pressed})=>[{opacity:pressed ? 0.8 : 1}, 
           {flexDirection: 'column', alignItems: 'center', marginHorizontal: 2, paddingHorizontal: 4, paddingVertical: 24,
@@ -272,7 +275,7 @@ export default Task = ({item, text, duration, actionObj, id}) => {
           borderWidth: 2}]} 
           onPress={()=>{changeTodoType(item, "schedule"); setEisenhourModalVisible(false)}}>
           <Schedule style={[ {color: (item.type == "schedule")?color:'#f1f2f3'}]} />
-          <Text style={[styles.itemText, { color:(item.type == "schedule")?color:'#f1f2f3', fontSize: 14, paddingTop: 2, paddingHorizontal: 13, textAlign: 'center'}]}>Schedule</Text>
+          <Text allowFontScaling={false} style={[styles.itemText, { color:(item.type == "schedule")?color:'#f1f2f3', fontSize: 12, paddingTop: 2, paddingHorizontal: 13, textAlign: 'center'}]}>Schedule</Text>
         </Pressable>
         </View>
         <View style={{ borderWidth: 0, display: 'flex', flexDirection: 'row', justifyContent:'space-between'}}>
@@ -282,7 +285,7 @@ export default Task = ({item, text, duration, actionObj, id}) => {
           borderWidth: 2}]} 
           onPress={()=>{changeTodoType(item, "delegate"); setEisenhourModalVisible(false)}}>
           <Delegate style={[ {color: (item.type == "delegate")?color:'#f1f2f3'}]} />
-          <Text style={[styles.itemText, { color:(item.type == "delegate")?color:'#f1f2f3', fontSize: 14, paddingTop: 2, paddingHorizontal: 13, textAlign: 'center'}]}>Delegate</Text>
+          <Text allowFontScaling={false} style={[styles.itemText, { color:(item.type == "delegate")?color:'#f1f2f3', fontSize: 12, paddingTop: 2, paddingHorizontal: 13, textAlign: 'center'}]}>Delegate</Text>
         </Pressable>
         <Pressable key={"delete"} style={({pressed})=>[{opacity:pressed ? 0.8 : 1}, 
           {flexDirection: 'column', alignItems: 'center', marginHorizontal: 2, paddingHorizontal: 4, paddingVertical: 24,
@@ -290,11 +293,11 @@ export default Task = ({item, text, duration, actionObj, id}) => {
           borderWidth: 2}]} 
           onPress={()=>{changeTodoType(item, "delete"); setEisenhourModalVisible(false)}}>
           <EDelete style={[ {color: (item.type == "delete")?color:'#f1f2f3'}]} />
-          <Text style={[styles.itemText, { color:(item.type == "delete")?color:'#f1f2f3', fontSize: 14, paddingTop: 2, paddingHorizontal: 13, textAlign: 'center'}]}>Delete</Text>
+          <Text allowFontScaling={false} style={[styles.itemText, { color:(item.type == "delete")?color:'#f1f2f3', fontSize: 12, paddingTop: 2, paddingHorizontal: 13, textAlign: 'center'}]}>Delete</Text>
         </Pressable>
         </View>
           <Pressable onPress={()=> changeTodoType(item, "untitled")} style={{backgroundColor: color, borderWidth:1, width:'80%', borderColor:'white', marginBottom:16, marginTop:12, borderRadius: 40, padding: 10}}>
-            <Text style={{color:'white', fontFamily: 'SemiBold', textAlign: 'center'}}> Not Sure? </Text>
+            <Text allowFontScaling={false} style={{color:'white', fontFamily: 'SemiBold', textAlign: 'center'}}> Not Sure? </Text>
           </Pressable>
         </View>
       </Pressable>
@@ -351,7 +354,7 @@ export default Task = ({item, text, duration, actionObj, id}) => {
         <TouchableOpacity style={{marginLeft:15, borderRadius: 50, borderColor: color, borderWidth: 2, padding: 6, }} onPress={()=>{setSvgModalVisible(true)}}>
         <ActionType  index={inputIndex} stylesProp={{color: color, padding: 2}} />
         </TouchableOpacity>
-        <TextInput style={[{ paddingVertical: 15, paddingHorizontal: 13, backgroundColor: '#FFF', marginVertical: 20, marginHorizontal: 10,
+        <TextInput allowFontScaling={false} style={[{ paddingVertical: 15, paddingHorizontal: 13, backgroundColor: '#FFF', marginVertical: 20, marginHorizontal: 10,
     borderRadius: 60, borderWidth: 2, borderColor: '#bababa', width: '65%', fontFamily: 'Regular',}]} blurOnSubmit={false} 
         placeholder={"Make your own type of task!"} placeholderTextColor={'#708090'}
           onChangeText={text => setInput(text)} value={input} onSubmitEditing={() => { 
@@ -379,7 +382,7 @@ export default Task = ({item, text, duration, actionObj, id}) => {
 const styles = StyleSheet.create({
 
 item: {
-    padding: 15,
+    padding: 11,
     borderRadius: 30,
     flexDirection: 'row',
     alignItems: 'center',
@@ -407,7 +410,7 @@ circle: {
 },
 itemText: {
     fontFamily: 'Regular',
-      fontSize: 15,
+      fontSize: 13,
       color: '#f2f3f4',
 },
 itemRight: {

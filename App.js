@@ -115,12 +115,13 @@ function CustomDrawerContent(props) {
    }, [refRBSheet.current?.state.modalVisible]);
 
   return (
+    <View style={{flex: 1}}>
     <DrawerContentScrollView {...props} keyboardShouldPersistTaps='handled'    >
       <DrawerItem
-        label = {() => <Text style={{ color: 'white', fontFamily: 'Bold', fontSize: 35 }}>{"✵ Daily Chronicle"}</Text>}
+        label = {() => <Text allowFontScaling={false} style={{ color: 'white', fontFamily: 'Bold', fontSize: 30 }}>{"✵ Daily Chronicle"}</Text>}
       />
         <DrawerItem
-        label = {() => <Text style={{ color: notesMode||todosMode ? 'white': color, fontFamily: 'SemiBold', letterSpacing: 2 }}>{"Diary"}</Text>}
+        label = {() => <Text allowFontScaling={false} style={{ color: notesMode||todosMode ? 'white': color, fontFamily: 'SemiBold', letterSpacing: 2 }}>{"Diary"}</Text>}
         icon={({focused, size}) => (
         <>
         <Diary width={25} height={25} color={notesMode||todosMode ? 'white': color} />
@@ -133,7 +134,7 @@ function CustomDrawerContent(props) {
         onPress={()=> {setNotesMode(false); setTodosMode(false); props.navigation.closeDrawer(); }}
       />
         <DrawerItem
-        label = {() => <Text style={{ color: todosMode ? color: 'white', fontFamily: 'SemiBold', letterSpacing: 2 }}>Todo</Text>}
+        label = {() => <Text allowFontScaling={false} style={{ color: todosMode ? color: 'white', fontFamily: 'SemiBold', letterSpacing: 2 }}>Todo</Text>}
         icon={({focused, size}) => (
         <>
         <Todo width={32} height={32} color={todosMode ? color: 'white'} />
@@ -149,7 +150,7 @@ function CustomDrawerContent(props) {
         <>
             <View  key={0}  >
             <DrawerItem
-              label = {() => <Text style={{ color:  'white', fontFamily: 'SemiBold', letterSpacing: 1, fontSize: 13, }}>{"   "}<Text style={{textDecorationLine: (todosMode && ("In Progress"==todosGenre))? 'underline' : 'none'}}>In Progress</Text></Text>}
+              label = {() => <Text allowFontScaling={false} style={{ color:  'white', fontFamily: 'SemiBold', letterSpacing: 1, fontSize: 10, }}>{"   "}<Text allowFontScaling={false} style={{textDecorationLine: (todosMode && ("In Progress"==todosGenre))? 'underline' : 'none'}}>In Progress</Text></Text>}
               icon={({focused, size}) => {
                 return (<InProgress width={20} height={20} style={{marginLeft: 10, marginRight: -20}} color='white' />)
               }}
@@ -162,7 +163,7 @@ function CustomDrawerContent(props) {
             </View>
             <View  key={1}  >
             <DrawerItem
-              label = {() => <Text style={{ color:  'white', fontFamily: 'SemiBold', letterSpacing: 1, fontSize: 13, }}>{"   "}<Text style={{textDecorationLine: (todosMode && ("Completed"==todosGenre))? 'underline' : 'none'}}>Completed</Text></Text>}
+              label = {() => <Text allowFontScaling={false} style={{ color:  'white', fontFamily: 'SemiBold', letterSpacing: 1, fontSize: 10, }}>{"   "}<Text allowFontScaling={false} style={{textDecorationLine: (todosMode && ("Completed"==todosGenre))? 'underline' : 'none'}}>Completed</Text></Text>}
               icon={({focused, size}) => {
                 return (<Complete width={20} height={20} style={{marginLeft: 10, marginRight: -20}} color='white' />)
               }}
@@ -176,7 +177,7 @@ function CustomDrawerContent(props) {
         </>
       }
         <DrawerItem
-        label = {() => <Text style={{ color: notesMode ? color: 'white', fontFamily: 'SemiBold', letterSpacing: 2 }}>Notes</Text>}
+        label = {() => <Text allowFontScaling={false} style={{ color: notesMode ? color: 'white', fontFamily: 'SemiBold', letterSpacing: 2 }}>Notes</Text>}
         icon={({focused, size}) => (
         <>
         <Notedown width={25} height={25} color={notesMode ? color: 'white'} />
@@ -193,7 +194,7 @@ function CustomDrawerContent(props) {
           return (
             <View  key={noteFolder.id}  >
             <DrawerItem
-              label = {() => <Text style={{ color:  'white', fontFamily: 'SemiBold', letterSpacing: 1, fontSize: 13, }}>{"   "}<Text style={{textDecorationLine: (notesMode && (noteFolder.text==notesGenre))? 'underline' : 'none'}}>{noteFolder.text}</Text></Text>}
+              label = {() => <Text allowFontScaling={false} style={{ color:  'white', fontFamily: 'SemiBold', letterSpacing: 1, fontSize: 10, }}>{"   "}<Text allowFontScaling={false} style={{textDecorationLine: (notesMode && (noteFolder.text==notesGenre))? 'underline' : 'none'}}>{noteFolder.text}</Text></Text>}
               icon={({focused, size}) => {
                 return (<Paper width={20} height={20} style={{marginLeft: 10, marginRight: -20}} color='white' />)
               }}
@@ -207,13 +208,13 @@ function CustomDrawerContent(props) {
             )})
       }
       {openedNotes && <DrawerItem
-              label = {() => <Text style={{ color:  'white', fontFamily: 'SemiBold', letterSpacing: 1, fontSize: 13 }}>{"   Add More"}</Text>}
+              label = {() => <Text allowFontScaling={false} style={{ color:  'white', fontFamily: 'SemiBold', letterSpacing: 1, fontSize: 10 }}>{"   Add More"}</Text>}
               icon={({focused, size}) => (<Add width={14} height={14} style={{marginLeft: 10, marginRight: -20}} color={false ? color: 'white'} />)}
               activeTintColor='white'
               onPress={() => {refRBSheet.current.open(); setForCalendarView(false);}}
              />}
       <DrawerItem
-        label = {() => <Text style={{ color: 'white', fontFamily: 'SemiBold', letterSpacing: 2 }}>{"Settings"}</Text>}
+        label = {() => <Text allowFontScaling={false} style={{ color: 'white', fontFamily: 'SemiBold', letterSpacing: 2 }}>{"Settings"}</Text>}
         icon={({focused, size}) => (<Paint width={28} height={28} color='white' />)}
         activeTintColor='white'
         onPress={()=> {setSettingsMode(true); props.navigation.closeDrawer();}}
@@ -239,7 +240,7 @@ function CustomDrawerContent(props) {
         }}
       >
       <View style={{flex:1, flexDirection: 'row', alignItems:'center'}}>
-        <TextInput style={[{ paddingVertical: 15, paddingHorizontal: 13, backgroundColor: '#FFF', marginVertical: 20, marginHorizontal: 10,
+        <TextInput allowFontScaling={false} style={[{ paddingVertical: 15, paddingHorizontal: 13, backgroundColor: '#FFF', marginVertical: 20, marginHorizontal: 10,
     borderRadius: 60, borderWidth: 2, borderColor: color, width: '80%', fontFamily: 'Regular',}]} blurOnSubmit={false} 
         placeholder={"Add a new notes folder"} placeholderTextColor={'#708090'}
           onChangeText={text => setText(text)} value={text} onSubmitEditing={() => { handleAddFolder() }}  
@@ -281,7 +282,7 @@ function CustomDrawerContent(props) {
         }}>
         <Delete  width={27} height={27} color={color} />
         </TouchableOpacity>
-        <TextInput style={[{ paddingVertical: 15, paddingHorizontal: 13, backgroundColor: '#FFF', marginVertical: 20, marginHorizontal: 10,
+        <TextInput allowFontScaling={false} style={[{ paddingVertical: 15, paddingHorizontal: 13, backgroundColor: '#FFF', marginVertical: 20, marginHorizontal: 10,
     borderRadius: 60, borderWidth: 2, borderColor: color, width: '70%', fontFamily: 'Regular',}]} blurOnSubmit={false} 
         placeholderTextColor={'#708090'}
           onChangeText={text => setRBText2(text)} value={RBText2} onSubmitEditing={() => { editFolder() }}  
@@ -296,6 +297,7 @@ function CustomDrawerContent(props) {
       </RBSheet>
 
     </DrawerContentScrollView>
+    </View>
   );
 }
 
@@ -320,7 +322,7 @@ function CustomDrawerContent(props) {
       <Drawer.Navigator screenOptions={{
     drawerStyle: {
       backgroundColor: color,
-      width: 280,
+      width: 270,
     },
     drawerLabelStyle: {
       color: 'white',
