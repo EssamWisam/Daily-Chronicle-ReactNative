@@ -25,16 +25,19 @@ Press a
 Click <a href="https://expo.dev/artifacts/71a47b4f-5be5-4e2c-922b-dd0ce70f3d64">here</a> to download the alpha release on your android phone 📱.
 
 <h2 align='center'> Demo & Features 🔥 </h2>
-<img src="https://user-images.githubusercontent.com/49572294/189504589-6485256c-ee00-4539-8fbe-cbcba9b441c0.png" >
-<img src="https://user-images.githubusercontent.com/49572294/188500814-61ea3835-a8d4-4feb-b31c-73cc4b497bd3.png" >
 
+<h2 align='center'> Demo & Features 🔥 </h2>
+
+
+<img src="https://user-images.githubusercontent.com/49572294/215291014-9e3d650d-c386-42b4-a609-c409f78ac18a.png" >
+<img src="https://user-images.githubusercontent.com/49572294/215291032-f2e9f045-3d85-489c-8a96-d9ec3811e617.png" >
 
 <div align='center'>
-<img src="https://user-images.githubusercontent.com/49572294/189504796-e59da348-cf33-4b31-8e5b-ad47d7735fd9.gif" width="350" >
+<img src="https://user-images.githubusercontent.com/49572294/215291071-c14e2ad0-c413-4848-a426-33d0eb00fb26.gif" width="350" >
 </div>
 
 
 
-<h2 align='center'> Thank you 💛  </h2>
+<h2 align='center'> Thank you 💙  </h2>
 
 
