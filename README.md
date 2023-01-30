@@ -1,5 +1,4 @@
-<img width="1221" alt="image" src="https://user-images.githubusercontent.com/49572294/188499530-c6da5dc3-f26b-400b-a807-7e59da90e523.png">
-
+<img width="1294" alt="image" src="https://user-images.githubusercontent.com/49572294/215479545-652f489a-95c3-447c-9cc8-e0ea67a3df9b.png">
 <h2 align='center'> Technology Stack 📚 </h2>
 
 <div align='center'>
