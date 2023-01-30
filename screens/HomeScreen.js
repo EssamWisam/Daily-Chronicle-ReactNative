@@ -152,7 +152,7 @@ export default HomeScreen = () => {
         </View>
         <View style={[styles.instr]}>
           {!notesMode && !todosMode && <Text allowFontScaling={false} style={[styles.instrText]}> 
-           {((!hideCalendar)?<Text><Text allowFontScaling={false} style={{ color: 'white', fontFamily: 'SemiBold' }}>{365 - getDay()} days</Text> left until {new Date().getFullYear()+1}</Text>: <Text allowFontScaling={false} style={{ color: 'white', fontFamily: 'Regular' }}>Start logging your day!</Text>)}
+           {((!hideCalendar)?<Text><Text allowFontScaling={false} style={{ color: 'white', fontFamily: 'SemiBold' }}>{365 - getDay()} days</Text> left until {new Date().getFullYear()+1}</Text>: <Text allowFontScaling={false} style={{ color: 'white', fontFamily: 'Regular'}}>Start logging your day!</Text>)}
           </Text>}
         </View>
         {

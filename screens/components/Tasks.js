@@ -355,7 +355,7 @@ export default Task = ({item, text, duration, actionObj, id}) => {
         <ActionType  index={inputIndex} stylesProp={{color: color, padding: 2}} />
         </TouchableOpacity>
         <TextInput allowFontScaling={false} style={[{ paddingVertical: 15, paddingHorizontal: 13, backgroundColor: '#FFF', marginVertical: 20, marginHorizontal: 10,
-    borderRadius: 60, borderWidth: 2, borderColor: '#bababa', width: '65%', fontFamily: 'Regular',}]} blurOnSubmit={false} 
+    borderRadius: 60, borderWidth: 2, borderColor: '#bababa', width: '65%', fontFamily: 'Regular', fontSize: 12}]} blurOnSubmit={false} 
         placeholder={"Make your own type of task!"} placeholderTextColor={'#708090'}
           onChangeText={text => setInput(text)} value={input} onSubmitEditing={() => { 
             if(input.trim()){

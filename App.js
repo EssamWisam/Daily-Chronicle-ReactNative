@@ -30,6 +30,7 @@ import { SetOpenedNotes } from './redux/slices/notes';
 import { SetOpenedTodos } from './redux/slices/notes';
 import { SetNoteFolders } from './redux/slices/notes';
 import { SetForCalendarView } from './redux/slices/notes';
+import { SetTips } from './redux/slices/notes';
 import {
   DrawerContentScrollView,
   DrawerItemList,
@@ -70,6 +71,7 @@ function CustomDrawerContent(props) {
   const [noteFolders, setNoteFolders] = [ useSelector(state => state.notes.noteFolders), (payload) => dispatch(SetNoteFolders(payload))];
   const [forCalendarView, setForCalendarView] = [ useSelector(state => state.notes.forCalendarView), (payload) => dispatch(SetForCalendarView(payload))];
 
+  const [tips, setTips] = [ useSelector(state => state.notes.tips), (payload) => dispatch(SetTips(payload))];
   const refRBSheet2 = useRef();
   const [RBText2, setRBText2] = useState('')
   const [RBTargetID, setRBTargetID] = useState(null)
@@ -86,7 +88,18 @@ function CustomDrawerContent(props) {
   const editFolder = () => {
     const newNoteFolders = [...noteFolders];
     const index = newNoteFolders.findIndex(noteFolder => noteFolder.id === RBTargetID);
+    const newTips = [...tips];
+    // find each tip with genre == newNoteFolders[index].text and change it to RBText2
+    newTips.forEach((tip, i) => {
+      if(tip.genre == newNoteFolders[index].text) {
+        newTips[i] = {...newTips[i], genre: RBText2};
+      }
+    })
+    setTips(newTips);
+
     newNoteFolders[index] = {...newNoteFolders[index], text: RBText2};
+
+
     setNoteFolders(newNoteFolders);
     refRBSheet2.current.close();
   }
@@ -121,7 +134,7 @@ function CustomDrawerContent(props) {
         label = {() => <Text allowFontScaling={false} style={{ color: 'white', fontFamily: 'Bold', fontSize: 30 }}>{"✵ Daily Chronicle"}</Text>}
       />
         <DrawerItem
-        label = {() => <Text allowFontScaling={false} style={{ color: notesMode||todosMode ? 'white': color, fontFamily: 'SemiBold', letterSpacing: 2 }}>{"Diary"}</Text>}
+        label = {() => <Text allowFontScaling={false} style={{ color: notesMode||todosMode ? 'white': color, fontFamily: 'SemiBold', letterSpacing: 2, fontSize: 12 }}>{"Diary"}</Text>}
         icon={({focused, size}) => (
         <>
         <Diary width={25} height={25} color={notesMode||todosMode ? 'white': color} />
@@ -134,7 +147,7 @@ function CustomDrawerContent(props) {
         onPress={()=> {setNotesMode(false); setTodosMode(false); props.navigation.closeDrawer(); }}
       />
         <DrawerItem
-        label = {() => <Text allowFontScaling={false} style={{ color: todosMode ? color: 'white', fontFamily: 'SemiBold', letterSpacing: 2 }}>Todo</Text>}
+        label = {() => <Text allowFontScaling={false} style={{ color: todosMode ? color: 'white', fontFamily: 'SemiBold', letterSpacing: 2, fontSize: 12 }}>Todo</Text>}
         icon={({focused, size}) => (
         <>
         <Todo width={32} height={32} color={todosMode ? color: 'white'} />
@@ -177,7 +190,7 @@ function CustomDrawerContent(props) {
         </>
       }
         <DrawerItem
-        label = {() => <Text allowFontScaling={false} style={{ color: notesMode ? color: 'white', fontFamily: 'SemiBold', letterSpacing: 2 }}>Notes</Text>}
+        label = {() => <Text allowFontScaling={false} style={{ color: notesMode ? color: 'white', fontFamily: 'SemiBold', letterSpacing: 2, fontSize: 12 }}>Notes</Text>}
         icon={({focused, size}) => (
         <>
         <Notedown width={25} height={25} color={notesMode ? color: 'white'} />
@@ -214,7 +227,7 @@ function CustomDrawerContent(props) {
               onPress={() => {refRBSheet.current.open(); setForCalendarView(false);}}
              />}
       <DrawerItem
-        label = {() => <Text allowFontScaling={false} style={{ color: 'white', fontFamily: 'SemiBold', letterSpacing: 2 }}>{"Settings"}</Text>}
+        label = {() => <Text allowFontScaling={false} style={{ color: 'white', fontFamily: 'SemiBold', letterSpacing: 2, fontSize: 12 }}>{"Settings"}</Text>}
         icon={({focused, size}) => (<Paint width={28} height={28} color='white' />)}
         activeTintColor='white'
         onPress={()=> {setSettingsMode(true); props.navigation.closeDrawer();}}
@@ -241,7 +254,7 @@ function CustomDrawerContent(props) {
       >
       <View style={{flex:1, flexDirection: 'row', alignItems:'center'}}>
         <TextInput allowFontScaling={false} style={[{ paddingVertical: 15, paddingHorizontal: 13, backgroundColor: '#FFF', marginVertical: 20, marginHorizontal: 10,
-    borderRadius: 60, borderWidth: 2, borderColor: color, width: '80%', fontFamily: 'Regular',}]} blurOnSubmit={false} 
+    borderRadius: 60, borderWidth: 2, borderColor: color, width: '80%', fontFamily: 'Regular', fontSize: 12}]} blurOnSubmit={false} 
         placeholder={"Add a new notes folder"} placeholderTextColor={'#708090'}
           onChangeText={text => setText(text)} value={text} onSubmitEditing={() => { handleAddFolder() }}  
           maxLength={17} 
@@ -283,7 +296,7 @@ function CustomDrawerContent(props) {
         <Delete  width={27} height={27} color={color} />
         </TouchableOpacity>
         <TextInput allowFontScaling={false} style={[{ paddingVertical: 15, paddingHorizontal: 13, backgroundColor: '#FFF', marginVertical: 20, marginHorizontal: 10,
-    borderRadius: 60, borderWidth: 2, borderColor: color, width: '70%', fontFamily: 'Regular',}]} blurOnSubmit={false} 
+    borderRadius: 60, borderWidth: 2, borderColor: color, width: '70%', fontFamily: 'Regular', fontSize: 12}]} blurOnSubmit={false} 
         placeholderTextColor={'#708090'}
           onChangeText={text => setRBText2(text)} value={RBText2} onSubmitEditing={() => { editFolder() }}  
           maxLength={17} 

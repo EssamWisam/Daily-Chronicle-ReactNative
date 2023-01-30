@@ -299,7 +299,7 @@ export default NoteView = ({ selectedDate, hideCalendar, setFullscreen }) => {
         <Delete  width={27} height={27} color={color} />
         </TouchableOpacity>
         <TextInput allowFontScaling={false} style={[{ paddingVertical: 15, paddingHorizontal: 13, backgroundColor: '#FFF', marginVertical: 20, marginHorizontal: 10,
-    borderRadius: 60, borderWidth: 2, borderColor: color, width: '70%', fontFamily: 'Regular',}]} blurOnSubmit={false} 
+    borderRadius: 60, borderWidth: 2, borderColor: color, width: '70%', fontFamily: 'Regular', fontSize: 12}]} blurOnSubmit={false} 
         placeholderTextColor={'#708090'}
           onChangeText={text => setRBText(text)} value={RBText} onSubmitEditing={() => { editItem() }}  
           maxLength={15} 
@@ -336,7 +336,7 @@ const styles = StyleSheet.create({
     marginTop: 9,
   },
   sectionTitleText: {
-    fontSize: 13,
+    fontSize: 11,
     fontFamily: 'SemiBold',
     color: '#bababa',
     textAlign: 'center',
@@ -365,6 +365,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 13,
     backgroundColor: '#FFF',
+    fontSize: 12,
     borderRadius: 60,
     borderWidth: 2,
     width: '70%',

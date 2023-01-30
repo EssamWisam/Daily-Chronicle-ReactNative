@@ -1,6 +1,6 @@
 {
   "name": "firebaseauth",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "scripts": {
     "start": "expo start --dev-client",
     "android": "expo run:android",

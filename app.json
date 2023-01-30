@@ -2,7 +2,7 @@
   "expo": {
     "name": "Daily Chronicle",
     "slug": "diary-app",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "orientation": "portrait",
     "icon": "./assets/real-icon.png",
     "userInterfaceStyle": "dark",
@@ -27,7 +27,7 @@
     "android": {
       "package": "com.essamos.diary",
       "permissions": [],
-      "versionCode": 3,
+      "versionCode": 4,
       "adaptiveIcon": {
         "foregroundImage": "./assets/real-icon.png",
         "backgroundColor": "#FFFFFF"
