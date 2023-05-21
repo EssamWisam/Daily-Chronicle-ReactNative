@@ -25,8 +25,6 @@ Click <a href="https://play.google.com/store/apps/details?id=com.essamos.diary">
 
 <h2 align='center'> Demo & Features 🔥 </h2>
 
-<h2 align='center'> Demo & Features 🔥 </h2>
-
 
 <img src="https://user-images.githubusercontent.com/49572294/215291014-9e3d650d-c386-42b4-a609-c409f78ac18a.png" >
 <img src="https://user-images.githubusercontent.com/49572294/215291032-f2e9f045-3d85-489c-8a96-d9ec3811e617.png" >
