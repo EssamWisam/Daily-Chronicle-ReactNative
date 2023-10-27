@@ -110,3 +110,6 @@ android/app/debug.keystore
 android/app/build_defs.bzl
 android/app/BUCK
 android/app/debug.keystore
+.expo/settings.json
+.expo/settings.json
+.expo/settings.json

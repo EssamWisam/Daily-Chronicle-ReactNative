@@ -1,6 +1,6 @@
 {
   "name": "firebaseauth",
-  "version": "1.0.4",
+  "version": "1.0.6",
   "scripts": {
     "start": "expo start --dev-client",
     "android": "expo run:android",
@@ -8,6 +8,7 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@expo/ngrok": "^4.1.1",
     "@react-native-async-storage/async-storage": "~1.17.3",
     "@react-native-community/slider": "^4.3.1",
     "@react-navigation/drawer": "^6.4.4",
@@ -16,10 +17,12 @@
     "@reduxjs/toolkit": "^1.8.4",
     "expo": "~46.0.7",
     "expo-linear-gradient": "~11.4.0",
+    "expo-splash-screen": "~0.16.2",
     "expo-status-bar": "~1.4.0",
     "expo-updates": "~0.14.5",
     "moment": "^2.29.4",
     "react": "18.0.0",
+    "react-dom": "18.0.0",
     "react-native": "0.69.6",
     "react-native-calendar-picker": "^7.1.2",
     "react-native-colored-scrollbar": "^1.0.0",
@@ -39,12 +42,10 @@
     "react-native-semicircle-slider-color-picker": "^0.1.0",
     "react-native-svg": "12.3.0",
     "react-native-vector-icons": "^9.2.0",
+    "react-native-web": "~0.18.7",
     "react-redux": "^8.0.2",
     "reanimated-color-picker": "^1.0.2",
-    "redux-persist": "^6.0.0",
-    "expo-splash-screen": "~0.16.2",
-    "react-dom": "18.0.0",
-    "react-native-web": "~0.18.7"
+    "redux-persist": "^6.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",

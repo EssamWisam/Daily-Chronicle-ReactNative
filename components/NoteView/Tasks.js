@@ -1,16 +1,19 @@
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView, Pressable, Vibration, Alert, Modal, Keyboard } from 'react-native';
-import { useState, useEffect, useRef } from 'react';
+// UI
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView, Pressable, Vibration, Alert, Modal } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
 import * as Progress from 'react-native-progress';
-import {  ActionType, textDecorator } from '../../utils/taskSetup';
+import { useState, useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { SetTips } from '../../redux/slices/notes';
-import { SetTasks } from '../../redux/slices/notes';
-import { SetTodosList } from '../../redux/slices/notes';
 import RBSheet from 'react-native-raw-bottom-sheet';
+import Slider from '@react-native-community/slider';
+
+// Utils
+import {  ActionType, textDecorator, randomColor, convertToHours } from '../../utils/taskSetup';
+
+// Icons
 import Lang from '../../assets/Lang.svg'
 import Light from '../../assets/light.svg'
 import Done from '../../assets/Done.svg'
-import Slider from '@react-native-community/slider';
 import Add from '../../assets/add.svg';
 import Do from '../../assets/Do.svg';
 import Schedule from '../../assets/Schedule.svg';
@@ -18,145 +21,132 @@ import Delegate from '../../assets/Delegate.svg';
 import EDelete from '../../assets/EDelete.svg';
 import CompleteTask from '../../assets/CompleteTask.svg';
 import BulletPoint from '../../assets/RightArrow.svg';
+
+// State Management
 import { SetActionObjects } from '../../redux/slices/notes';
 import { SetForCalendarView } from '../../redux/slices/notes';
-import { StatusBar } from 'expo-status-bar';
+import { SetTips } from '../../redux/slices/notes';
+import { SetTasks } from '../../redux/slices/notes';
+import { SetTodosList } from '../../redux/slices/notes';
 
-
-
+// Used in the noteview to render tasks (which can also be note(tip) or todo entries)
 export default Task = ({item, text, duration, actionObj, id}) => {
    const color = useSelector(state => state.colors.color)['hex']
-   const  notesMode  = useSelector(state => state.notes.notesMode)
-   const notesGenre = useSelector(state => state.notes.notesGenre)
-   const todosGenre = useSelector(state => state.notes.todosGenre)
-   const todosMode = useSelector(state => state.notes.todosMode)
+   const dispatch = useDispatch();
+
+   // Tasks Related
+   const [tasks, setTasks] = [ useSelector(state => state.notes.tasks), (payload) => dispatch(SetTasks(payload))];
    const allTasks = useSelector(state => state.notes.allTasks)
    const [actionObjects, setActionObjects] = [ useSelector(state => state.notes.actionObjects), (payload) => dispatch(SetActionObjects(payload))];
-   const dispatch = useDispatch();
-   const [tips, setTips] = [ useSelector(state => state.notes.tips), (payload) => dispatch(SetTips(payload))];
-   const [tasks, setTasks] = [ useSelector(state => state.notes.tasks), (payload) => dispatch(SetTasks(payload))];
-    const [todosList, setTodosList] = [ useSelector(state => state.notes.todosList), (payload) => dispatch(SetTodosList(payload))];
-   const [input, setInput] = useState('');
-   const  refRBSheet  = useRef();
-   const refRBSheetInput = useRef();
-   const [iconModalVisible, setIconModalVisible] = useState(false);
-   const [eisenhourModalVisible, setEisenhourModalVisible] = useState(false);
-   const [svgModalVisible, setSvgModalVisible] = useState(false);
    const [forCalendarView, setForCalendarView] = [ useSelector(state => state.notes.forCalendarView), (payload) => dispatch(SetForCalendarView(payload))];
-   const [inputIndex, setInputIndex] = useState(16);
-   // whenever RB sheet changes
-    useEffect(() => {
-     setForCalendarView(!refRBSheetInput.current.state.modalVisible)
-    }, [refRBSheetInput.current?.state.modalVisible]);
-
-   const deleteTip = (target) => {
-        setTips(tips.filter((tip, i) => tip.id !== target));
-    }
-
-    const deleteTodo = (target) => {
-        setTodosList(todosList.filter((todo, i) => todo.id !== target));
-    }
-
-
+ 
+    // change task duration
     const changeTaskDuration = (target, newDuration) => {
-        setTasks(tasks.map((task, i) => {
-            if(task.id === target) {
-                return {...task, duration: newDuration/6.0};
-            }
-            return task;
-        }))
-
-    }
-
+      setTasks(tasks.map((task, i) => {
+          if(task.id === target) {
+              return {...task, duration: newDuration/6.0};
+          }
+          return task;
+      }))
+    } 
+    // change task type
     const changeTaskAction = (target, newAction) => {
-   
-        const newState = tasks.map((task, i) => {
-            if(task.id === target) {
-                return {...task, action: newAction};
-            }
-            return task;
-        })
-
-        setTasks(newState);
-      }
-      // function to find a random color
-      const randomColor = () => {
-        const letters = '0123456789ABCDEF';
-        let color = '#';
-        for (let i = 0; i < 6; i++) {
-          let number = Math.floor(Math.random() * 16)
-          number = number > 8 ? number - parseInt(number/3) : number;
-          color += letters[number];
-        }
-        // make the color darker
-        return color;
-      }
-      
-      const changeTodoType = (target, newType) => {
-        const newTodos = [...todosList];
-        const index = newTodos.findIndex(todo => todo.id === target.id);
-        newTodos[index] = {...newTodos[index], type: newType};
-        setTodosList(newTodos);
-      }
-
-
-
-
-
+      const newState = tasks.map((task, i) => {
+          if(task.id === target) {
+              return {...task, action: newAction};
+          }
+          return task;
+      })
+      setTasks(newState);
+    }
+    // add new task type
     const addTaskAction = (actionText, idx) => {
 
-        const newAction = {
-            name: actionText,
-            value: 0.0,
-            color: randomColor(),
-            index: idx,
-            id: `${actionText}_${new Date().getMilliseconds()}`
-        }
-        setActionObjects([ newAction, ...actionObjects]);
-      refRBSheetInput.current.close();
-      setInput('');
-      
+      const newAction = {
+          name: actionText,
+          value: 0.0,
+          color: randomColor(),
+          index: idx,
+          id: `${actionText}_${new Date().getMilliseconds()}`
+      }
+      setActionObjects([ newAction, ...actionObjects]);
+    refRBSheetInput.current.close();
+    setInput('');
     }
-
-
+    // delete task type
     const deleteAction = (target) => {
-        // loop over allTasks and see if the action is used in any of them
-        // Kept console.logging to write the next line
-        const actionUsed = Object.entries(allTasks).flat().filter(x => typeof x !== 'string' && !(x instanceof String) && x?.length).flat().find(c => c.action.id === target);
-        if (actionUsed) {
-            Alert.alert("Unable to delete","You can't delete an action that is used in a task. Delete or change the task first.");
-        }
-        else if (actionObjects.find((action) => action.id === target).name === "Other") {
-            Alert.alert("Unable to delete","You can't delete the default action.");
-        }
-        else {
-        setActionObjects(actionObjects.filter((action) => action.id !== target));
-        Vibration.vibrate(50);
-        }
+      // loop over allTasks and see if the action is used in any of them
+      // Kept console.logging to write the next line
+      const actionUsed = Object.entries(allTasks).flat().filter(x => typeof x !== 'string' && !(x instanceof String) && x?.length).flat().find(c => c.action.id === target);
+      if (actionUsed) {
+          Alert.alert("Unable to delete","You can't delete an action that is used in a task. Delete or change the task first.");
+      }
+      else if (actionObjects.find((action) => action.id === target).name === "Other") {
+          Alert.alert("Unable to delete","You can't delete the default action.");
+      }
+      else {
+      setActionObjects(actionObjects.filter((action) => action.id !== target));
+      Vibration.vibrate(50);
+      }
     }
 
+   // Notes related
+   const  notesMode  = useSelector(state => state.notes.notesMode)
+   const notesGenre = useSelector(state => state.notes.notesGenre)
+   const [tips, setTips] = [ useSelector(state => state.notes.tips), (payload) => dispatch(SetTips(payload))];
+    // delete note
+    const deleteTip = (target) => {
+      setTips(tips.filter((tip, i) => tip.id !== target));
+    }
+
+   // Todos mode
+   const todosMode = useSelector(state => state.notes.todosMode)
+   const todosGenre = useSelector(state => state.notes.todosGenre)
+   const [todosList, setTodosList] = [ useSelector(state => state.notes.todosList), (payload) => dispatch(SetTodosList(payload))];
+   const [eisenhourModalVisible, setEisenhourModalVisible] = useState(false);
+    // change todo type
+    const changeTodoType = (target, newType) => {
+      const newTodos = [...todosList];
+      const index = newTodos.findIndex(todo => todo.id === target.id);
+      newTodos[index] = {...newTodos[index], type: newType};
+      setTodosList(newTodos);
+    }
+    // delete completed todo
+    const deleteTodo = (target) => {
+      setTodosList(todosList.filter((todo, i) => todo.id !== target));
+    }
+
+    // Set Time and Action Modal
+    const  refRBSheet  = useRef();
+    const [sliderValue, setSliderValue] = useState(item.duration);
     // whenever duration changes, update the task
     useEffect(() => {
       setSliderValue(item.duration * 6.0)
     }, [item.duration])
 
+   // New Action Modal
+   const [input, setInput] = useState('');
+   const refRBSheetInput = useRef();
+   useEffect(() => {
+    setForCalendarView(!refRBSheetInput.current.state.modalVisible)
+   }, [refRBSheetInput.current?.state.modalVisible]);
 
-    const [sliderValue, setSliderValue] = useState(item.duration);
-    // convert decimal hours to hours and minutes
-    const convertToHours = (decimalHours) => {
-        let hours = Math.floor(decimalHours);
-        let minutes = Math.round((decimalHours - hours) * 60);
-        if (minutes == 0)     return hours + 'h';
-        else                  return `${hours}h ${minutes}m`;
-    }
+   // Choose Action Modal
+   const [iconModalVisible, setIconModalVisible] = useState(false);
 
+   // Choose New Action Icon Modal
+   const [svgModalVisible, setSvgModalVisible] = useState(false);
+   const [inputIndex, setInputIndex] = useState(16);
+   
    
    return(
       <>
       <View style={[styles.item, {backgroundColor: color, paddingRight: (notesMode || todosMode)? 5:15 }]}>
          <View style={styles.itemLeft}>
          <TouchableOpacity onPress={() => (!notesMode && !todosMode)?setIconModalVisible(true):(todosMode & todosGenre!='Completed')?setEisenhourModalVisible(true):null}>
+            {/* Bullet that opens action types modal in diary mode */}
             {!notesMode && !todosMode && <ActionType index={actionObj.index} stylesProp={styles.itemStyle} />}
+            {/* Useless bullet with different shapes in other modes */}
             {(notesMode && notesGenre == 'Language Spice') && <Lang style={ styles.itemStyle} width={22} color='white' height={22} />}
             {(notesMode && notesGenre == 'BucketList') && <Done onPress={()=>deleteTip(id)} style={ styles.itemStyle} width={25} color='white' height={25} />}
             {(notesMode && notesGenre == 'Self-Improvement') && <Light style={ styles.itemStyle} width={22} color='white' height={22} />}
@@ -165,17 +155,19 @@ export default Task = ({item, text, duration, actionObj, id}) => {
             </TouchableOpacity>
             <Text allowFontScaling={false} style={[styles.itemText, {maxWidth: (notesMode||todosMode)? (!(['Language Spice', 'Todo', 'Self-Improvement'].includes(notesGenre) || todosMode)?'100%':'85%'):'80%'}]}>{(duration)?textDecorator(text):text}</Text>
          </View>
+          {/* right Icon opens timer modal and right Icon shows time in diary mode */}
          {!(notesMode||todosMode) && <TouchableOpacity onPress={()=>{ refRBSheet.current.open(); }}>
          <Progress.Pie  progress={(item.duration)} size={25} color='#f2f3f4' style={{display:  'flex'}}  />
          </TouchableOpacity>}
+         {/* Left Icon Completes todo in todosMode */}
          {(!notesMode && todosMode) && (item.type !="done") 
          &&
          <TouchableOpacity onPress={()=>changeTodoType(item, 'done')}>
          <Done  style={ styles.itemStyle} width={25} color='white' height={25} />
           </TouchableOpacity>
          }
-
       </View>
+      {/* Set Action Type and Time in Diary Mode */}
       <RBSheet
       ref={refRBSheet}
       closeOnDragDown={false}
@@ -213,7 +205,7 @@ export default Task = ({item, text, duration, actionObj, id}) => {
     step={1/(12*60)}
   />
     </RBSheet>
-
+       {/* Select Action Type Modal */}
     {!todosMode && !notesMode && <Modal
       animationType={"fade"}
       visible={iconModalVisible}
@@ -248,6 +240,7 @@ export default Task = ({item, text, duration, actionObj, id}) => {
       </Pressable>
     </Modal>}
 
+   {/* Eisenhour Matrix Modal */}
     {todosMode &&!notesMode && <Modal
       animationType={"fade"}
       visible={eisenhourModalVisible}
@@ -302,7 +295,7 @@ export default Task = ({item, text, duration, actionObj, id}) => {
         </View>
       </Pressable>
     </Modal>}
-
+   {/* Select New Action Icon Modal */}
     <Modal
       animationType={"fade"}
       visible={svgModalVisible}
@@ -328,6 +321,7 @@ export default Task = ({item, text, duration, actionObj, id}) => {
         </View>
       </Pressable>
     </Modal>
+    {/* Input New Action Modal */}
     <RBSheet
         ref={refRBSheetInput}
         closeOnDragDown={false}
@@ -369,15 +363,17 @@ export default Task = ({item, text, duration, actionObj, id}) => {
           addTaskAction(input, inputIndex); setIconModalVisible(true); setInputIndex(16);
           }
         }}>
-        <Add  width={27} height={27} color={color} />
+        <Add width={27} height={27} color={color} />
         </TouchableOpacity>
 
         </View>
       </RBSheet>
-
     </>
    )
 }
+
+
+
 
 const styles = StyleSheet.create({
 

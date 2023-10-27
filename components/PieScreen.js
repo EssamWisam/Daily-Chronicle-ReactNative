@@ -1,7 +1,7 @@
-import { useEffect } from 'react';
-import { PieChart } from "react-native-gifted-charts";
 import {View, StyleSheet, Text, ScrollView, Modal, TouchableOpacity } from "react-native";
+import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import { PieChart } from "react-native-gifted-charts";
 import { hexToHsv } from '../utils/taskSetup';
 
 export default PieScreen = ({ currentDate, pieMode, dateText}) => {
@@ -68,54 +68,56 @@ const renderDot = color => {
   }
 
   const renderLegendComponent = () => {
-    const RowComponent = ({label1, label2, percent1, percent2, color1, color2}) => {
-      // check label1 is longer than 10 characters
-      if(label1.length > 8) {
-        label1 = label1.substring(0, 8) + '... '
-      }
-      if(label2 && label2.length > 8) {
-        label2 = label2.substring(0, 8) + '... '
-      }
+        const RowComponent = ({label1, label2, percent1, percent2, color1, color2}) => {
+          // check label1 is longer than 10 characters
+          if(label1.length > 8) {
+            label1 = label1.substring(0, 8) + '... '
+          }
+          if(label2 && label2.length > 8) {
+            label2 = label2.substring(0, 8) + '... '
+          }
 
-      return (
-        <View style={[styles.rowStyle, {marginBottom: 12, marginLeft: 3, borderWidth: 0}]}>
-        <View style={{flexDirection: 'row', alignItems: 'center', width: 120, marginRight: 60,}}>
-          {renderDot(color1)}
-          <Text allowFontScaling={false} style={{color: 'black', fontFamily: 'SemiBold', width: 100, fontSize: 11}}>{label1}: {percent1}%</Text>
-        </View>
-        {label2 && <View style={{flexDirection: 'row', alignItems: 'center', width: 120}}>
-          {renderDot(color2)}
-          <Text allowFontScaling={false} style={{color: 'black', fontFamily: 'SemiBold', width: 100, fontSize: 11}}>{label2}: {percent2}%</Text>
-        </View>}
-      </View>
-      )
-    }
+          return (
+            <View style={[styles.rowStyle, {marginBottom: 12, marginLeft: 3, borderWidth: 0}]}>
+            <View style={{flexDirection: 'row', alignItems: 'center', width: 120, marginRight: 60,}}>
+              {renderDot(color1)}
+              <Text allowFontScaling={false} style={{color: 'black', fontFamily: 'SemiBold', width: 100, fontSize: 11}}>{label1}: {percent1}%</Text>
+            </View>
+            {label2 && <View style={{flexDirection: 'row', alignItems: 'center', width: 120}}>
+              {renderDot(color2)}
+              <Text allowFontScaling={false} style={{color: 'black', fontFamily: 'SemiBold', width: 100, fontSize: 11}}>{label2}: {percent2}%</Text>
+            </View>}
+          </View>
+          )
+        }
   
-    if(pieData.length % 2 != 0) {
-      pieData.push({value: '', color: 'transparent', gradientCenterColor: 'transparent', label: ''})
-    }
-    const pieDataPairs = pieData.reduce(function (rows, key, index) {
-      return (index % 2 == 0 ? rows.push([key])
-        : rows[rows.length-1].push(key)) && rows;
-    }, []);
+        if(pieData.length % 2 != 0) {
+          pieData.push({value: '', color: 'transparent', gradientCenterColor: 'transparent', label: ''})
+        }
+        const pieDataPairs = pieData.reduce(function (rows, key, index) {
+          return (index % 2 == 0 ? rows.push([key])
+            : rows[rows.length-1].push(key)) && rows;
+        }, []);
     
-    let pieRows = [];
-    for (var i = 0; i < pieDataPairs.length; i++) {
-        pieRows.push(<RowComponent key={i} label1={pieDataPairs[i][0].label} label2={pieDataPairs[i][1].label} 
-          color1={pieDataPairs[i][0].color} 
-          color2={pieDataPairs[i][1].color} percent1={pieDataPairs[i][0].value} percent2={pieDataPairs[i][1].value}/>);
-    }
+        let pieRows = [];
+        for (var i = 0; i < pieDataPairs.length; i++) {
+            pieRows.push(<RowComponent key={i} label1={pieDataPairs[i][0].label} label2={pieDataPairs[i][1].label} 
+              color1={pieDataPairs[i][0].color} 
+              color2={pieDataPairs[i][1].color} percent1={pieDataPairs[i][0].value} percent2={pieDataPairs[i][1].value}/>);
+        }
 
-  return   (
-  <View >
-  <ScrollView  contentContainerStyle={{flexDirection: 'row', alignItems: 'center',  borderWidth: 0,  marginHorizontal: 25, flexWrap: 'wrap', height: 290}}>
-    {pieRows}
-  </ScrollView>
-  </View>)
-
+        return   (
+        <View >
+        <ScrollView  
+        contentContainerStyle={{
+          flexDirection: 'row', alignItems: 'center',  borderWidth: 0,  
+          marginHorizontal: 25, flexWrap: 'wrap', height: 290
+          }}>
+          {pieRows}
+        </ScrollView>
+        </View>
+        )
 };
-
-
 
 return (
   <View style={{ paddingVertical: 10, backgroundColor: color, flex: 1, marginTop: 10, marginBottom: -20,

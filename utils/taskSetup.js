@@ -192,3 +192,27 @@ export const hexToHsv = (hex) => {
    return [h, s, l]
 
 }
+
+
+
+// function to find a random color
+export const randomColor = () => {
+   const letters = '0123456789ABCDEF';
+   let color = '#';
+   for (let i = 0; i < 6; i++) {
+      let number = Math.floor(Math.random() * 16)
+      number = number > 8 ? number - parseInt(number/3) : number;
+      color += letters[number];
+   }
+   // make the color darker
+   return color;
+   }
+
+
+// convert decimal hours to hours and minutes
+export const convertToHours = (decimalHours) => {
+   let hours = Math.floor(decimalHours);
+   let minutes = Math.round((decimalHours - hours) * 60);
+   if (minutes == 0)     return hours + 'h';
+   else                  return `${hours}h ${minutes}m`;
+}

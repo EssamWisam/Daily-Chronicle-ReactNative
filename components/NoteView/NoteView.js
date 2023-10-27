@@ -1,113 +1,83 @@
+// UI & Hooks
 import { Platform, StyleSheet, Text, View, KeyboardAvoidingView, Vibration, TextInput, TouchableOpacity, Pressable, Keyboard, ScrollView } from 'react-native';
+import RBSheet from "react-native-raw-bottom-sheet";
 import { useState, useEffect, useRef } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+
+// Icons
 import Task from './Tasks';
 import Add from '../../assets/add.svg';
 import Delete from '../../assets/Delete.svg'
 import Edit from '../../assets/Edit.svg'
-import useKeyboardOpen from '../../utils/keyboard';
-import ScrollBar from '../../utils/ScrollBar';
-import { findDuration, findActionType } from '../../utils/taskSetup';
 import Up from '../../assets/Up.svg';
-import { useSelector, useDispatch } from 'react-redux';
+
+// State
 import { SetTask } from '../../redux/slices/notes';
 import { SetTasks } from '../../redux/slices/notes'
 import { SetTips } from '../../redux/slices/notes';
 import { SetAllTasks } from '../../redux/slices/notes';
 import { SetTodosList } from '../../redux/slices/notes';
-import { SetNotesGenre } from '../../redux/slices/notes';
-import { SetTodosGenre } from '../../redux/slices/notes';
-import RBSheet from "react-native-raw-bottom-sheet";
 
+// Utils
+import useKeyboardOpen from '../../utils/keyboard';
+import ScrollBar from '../../utils/ScrollBar';
+import { findDuration, findActionType } from '../../utils/taskSetup';
 
+// Responsible for rendering diary task items, todo items and note items
 export default NoteView = ({ selectedDate, hideCalendar, setFullscreen }) => {
-  const color = useSelector(state => state.colors.color)['hex']
-  const [added, setAdded] = useState(false);    // state to make scroll bar go down upon adding task
-  const isKeyboardOpen = useKeyboardOpen();
-  const inputRef = useRef(null);
-  const  notesMode  = useSelector(state => state.notes.notesMode)
-  const  todosMode  = useSelector(state => state.notes.todosMode)
   const dispatch = useDispatch();
-  const actionObjects = useSelector(state => state.notes.actionObjects)
+  const isKeyboardOpen = useKeyboardOpen();
+  const color = useSelector(state => state.colors.color)['hex']
+  const [height, setHeight] = useState(null);
+
+  // Tasks (Diary Entries)
   const [task, setTask] = [ useSelector(state => state.notes.task), (payload) => dispatch(SetTask(payload))];
   const [tasks, setTasks] = [ useSelector(state => state.notes.tasks), (payload) => dispatch(SetTasks(payload))];
-  const [todosList, setTodosList] = [ useSelector(state => state.notes.todosList), (payload) => dispatch(SetTodosList(payload))];
-  const [tips, setTips] = [ useSelector(state => state.notes.tips), (payload) => dispatch(SetTips(payload))];
+  const [added, setAdded] = useState(false);    // state to make scroll bar go down upon adding task
   const [allTasks, setAllTasks] = [ useSelector(state => state.notes.allTasks), (payload) => dispatch(SetAllTasks(payload))];
-  const notesGenre = useSelector(state => state.notes.notesGenre)
-  const todosGenre = useSelector(state => state.notes.todosGenre)
-  const [height, setHeight] = useState(null);
-  const refRBSheet = useRef();
-  const [RBText, setRBText] = useState('')
+  const actionObjects = useSelector(state => state.notes.actionObjects) // type of task
+    // Follows with handle task
+    useEffect(() => {
+      setAllTasks(({ ...allTasks, [selectedDate]: tasks }));
+    }, [tasks]);
+    // whenever selectedDate changes, set tasks to allTasks[selectedDate]
+    useEffect(() => {
+      if(allTasks[selectedDate])  setTasks(allTasks[selectedDate]);
+      else setTasks([]);
+    } , [selectedDate]);
 
+  // Notes
+  const  notesMode  = useSelector(state => state.notes.notesMode)
+  const notesGenre = useSelector(state => state.notes.notesGenre)
+  const [tips, setTips] = [ useSelector(state => state.notes.tips), (payload) => dispatch(SetTips(payload))];
   // get all tips with property genre = notesGenre
   const getTips = () => {
-   return tips.filter((tip) => tip.genre == notesGenre)
-  }
+    return tips.filter((tip) => tip.genre == notesGenre)
+   }
 
+  // Todos
+  const  todosMode  = useSelector(state => state.notes.todosMode)
+  const todosGenre = useSelector(state => state.notes.todosGenre)
+  const [todosList, setTodosList] = [ useSelector(state => state.notes.todosList), (payload) => dispatch(SetTodosList(payload))];
 
-
-  // get all todos with type 'do'
-  const Todos = ({type}) => {
-
-    TextElement = ()=> {
-      if (type == 'do') {
-        return <Text allowFontScaling={false} style={{color: '#f2f3f4', fontSize: 27,  fontFamily:'SemiBold', marginVertical: 6}}>Do</Text>
+  // Input field
+  const inputRef = useRef(null);
+    // watch for when the keyboard closes
+    useEffect(() => {
+      if (!isKeyboardOpen) {
+      if (inputRef.current){
+      inputRef.current.blur();
       }
-      else if (type == 'schedule') {
-        return <Text allowFontScaling={false} style={{color: '#f2f3f4', fontSize: 27,  fontFamily:'SemiBold', marginVertical: 6}}>Schedule</Text>
       }
-      else if (type == 'delegate') {
-        return <Text allowFontScaling={false} style={{color: '#f2f3f4', fontSize: 27,  fontFamily:'SemiBold', marginVertical: 6}}>Delegate</Text>
-      }
-      else if (type == 'delete') {
-        return <Text allowFontScaling={false} style={{color: '#f2f3f4', fontSize: 27,  fontFamily:'SemiBold', marginVertical: 6}}>Delete</Text>
-      }
-      else if (type=='untitled'){
-        return <Text allowFontScaling={false} style={{color: '#f2f3f4', fontSize: 27,  fontFamily:'SemiBold', marginVertical: 6}}>Untitled</Text>
-      }
-      else {
-        return null
-      }
-    }
+    }, [isKeyboardOpen]);
 
-    const TodoElement = ({todo}) => {
-    return todosList.filter((todo) => todo.type == type).map((todo, index) => {
-      return (
-        <>
-        <Pressable key={todo.id} style={({pressed})=>[{opacity:pressed ? 0.8 : 1}, {marginBottom: 5}]} onLongPress={() => { refRBSheet.current.open(); setRBTargetID(todo.id); setRBText(todo.text);}}>
-        <Task item={todo} text={todo.text} duration={0} actionObj={{}}  id={todo.id}/>
-        </Pressable>
-        </>
-        )
-    })
-  }
+  // Edit modal
+  const refRBSheet = useRef();
+  const [RBText, setRBText] = useState('')
+  const [RBTargetID, setRBTargetID] = useState(null)
 
-    if (todosList.filter((todo) => todo.type == type).length == 0) {
-      return null
-    }
-    return (
-      <>
-      <TextElement/>
-      <TodoElement/>
-      </>
-    )
-
-  }
-
-
-
-  // watch for when the keyboard closes
-  useEffect(() => {
-    if (!isKeyboardOpen) {
-    if (inputRef.current){
-     inputRef.current.blur();
-    }
-    }
-  }, [isKeyboardOpen]);
-
-
-  const handleAddTask = () => {
-
+  // Adding, editing and deleting items
+  const handleAddItem = () => {
     if(task.trim()) {
     if(!notesMode && !todosMode){
     setTasks([...tasks, {
@@ -126,7 +96,6 @@ export default NoteView = ({ selectedDate, hideCalendar, setFullscreen }) => {
        action: {}
        }]);
     }
-
     else if (todosMode && !notesMode){
       setTodosList([...todosList, {
         text: task,
@@ -134,47 +103,9 @@ export default NoteView = ({ selectedDate, hideCalendar, setFullscreen }) => {
         type: 'untitled',
         duration: 0.0,  action: {}
        }]);
-
     }
-
     setTask('');
     setAdded(!added);   //just a change of state for useEffect
-
-    }
-
-
-  }
-
-  // Follows with handle task
-  useEffect(() => {
-    setAllTasks(({ ...allTasks, [selectedDate]: tasks }));
-  }, [tasks]);
-
-  // whenever selectedDate changes, set tasks to allTasks[selectedDate]
-  useEffect(() => {
-    if(allTasks[selectedDate])  setTasks(allTasks[selectedDate]);
-    else setTasks([]);
-  } , [selectedDate]);
-
-  const [RBTargetID, setRBTargetID] = useState(null)
-
-
-  const deleteItem = ()=>{
-    if(!notesMode && !todosMode){
-      setTasks(tasks.filter((task, i) => task.id !== RBTargetID));
-      setFullscreen(false)
-      refRBSheet.current.close()
-
-    }
-    else if (notesMode && !todosMode){
-      setTips(tips.filter((tip, i) => tip.id !== RBTargetID));
-      setFullscreen(false)
-      refRBSheet.current.close()
-    }
-    else if (todosMode && !notesMode){
-      setTodosList(todosList.filter((todo, i) => todo.id !== RBTargetID));
-      setFullscreen(false)
-      refRBSheet.current.close()
     }
   }
 
@@ -201,7 +132,25 @@ export default NoteView = ({ selectedDate, hideCalendar, setFullscreen }) => {
       refRBSheet.current.close();
     }
   }
-  
+
+  const deleteItem = ()=>{
+    if(!notesMode && !todosMode){
+      setTasks(tasks.filter((task, i) => task.id !== RBTargetID));
+      setFullscreen(false)
+      refRBSheet.current.close()
+
+    }
+    else if (notesMode && !todosMode){
+      setTips(tips.filter((tip, i) => tip.id !== RBTargetID));
+      setFullscreen(false)
+      refRBSheet.current.close()
+    }
+    else if (todosMode && !notesMode){
+      setTodosList(todosList.filter((todo, i) => todo.id !== RBTargetID));
+      setFullscreen(false)
+      refRBSheet.current.close()
+    }
+  }
 
   return (
     <View style={[styles.container, (hideCalendar && !notesMode && !todosMode) ? ({ borderTopRightRadius: 25, borderTopLeftRadius: 25, marginTop: 20, paddingTop: 10  }) : ({}), {backgroundColor: (notesMode||todosMode)? color+'64': '#f2f3f4'}]}
@@ -210,6 +159,7 @@ export default NoteView = ({ selectedDate, hideCalendar, setFullscreen }) => {
       setHeight(height);
     }}
     >
+        {/* In case of diary tasks, check whether minimized or maximized */}
         {(!(hideCalendar || notesMode || todosMode) && (tasks.length!==0))?
          <View style={styles.up}><TouchableOpacity onPress={()=>setFullscreen(true)}><Up style={[styles.sectionTitle, {color: color}]}></Up></TouchableOpacity></View>
          :
@@ -223,7 +173,7 @@ export default NoteView = ({ selectedDate, hideCalendar, setFullscreen }) => {
         hideCalendar={hideCalendar}
         selectedDate={selectedDate}
       >
-
+      {/* Decide whether to show diary tasks */}
         <View style={[styles.items,]} >
           {(!notesMode && !todosMode)? allTasks[selectedDate]?.map((task, index) => {
                 return (
@@ -234,21 +184,22 @@ export default NoteView = ({ selectedDate, hideCalendar, setFullscreen }) => {
               })
             : (todosMode)? 
             <>
+            {/* Or to show todos in progress/completed */}
             {(todosGenre=="In Progress")?<>
-            <Todos type="do" />
-            <Todos type="schedule" />
-            <Todos type="delegate" />
-            <Todos type="delete"/>
-            <Todos type="untitled" />
+            <Todos type="do" todosList={todosList} refRBSheet={refRBSheet} setRBTargetID={setRBTargetID} setRBText={setRBText} />
+            <Todos type="schedule" todosList={todosList} refRBSheet={refRBSheet} setRBTargetID={setRBTargetID} setRBText={setRBText} />
+            <Todos type="delegate" todosList={todosList} refRBSheet={refRBSheet} setRBTargetID={setRBTargetID} setRBText={setRBText} />
+            <Todos type="delete" todosList={todosList} refRBSheet={refRBSheet} setRBTargetID={setRBTargetID} setRBText={setRBText} />
+            <Todos type="untitled" todosList={todosList} refRBSheet={refRBSheet} setRBTargetID={setRBTargetID} setRBText={setRBText} />
             </>
             :
-            <Todos type="done" />
-
+            <Todos type="done" todosList={todosList} refRBSheet={refRBSheet} setRBTargetID={setRBTargetID} setRBText={setRBText} />
             }
             </>
             :
             getTips().map((tip, index) => {
               return (
+                // Or to show notes
                 <Pressable key={tip.id} style={({pressed})=>[{opacity:pressed ? 0.8 : 1}, {marginBottom: (index==getTips().length-1)?  20: 0}]} onLongPress={() => {refRBSheet.current.open(); setRBTargetID(tip.id); setRBText(tip.text)} }>
                 <Task item ={tip} text={tip.text} id={tip.id} duration={0} actionObj={{}} />
                 </Pressable>
@@ -258,66 +209,156 @@ export default NoteView = ({ selectedDate, hideCalendar, setFullscreen }) => {
         </View>
       </ScrollBar>
       </View>
+      {/* Text input and button */}
       { ((!notesMode && !todosMode)||notesMode|| (todosMode && todosGenre!="Completed")) && <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={[styles.writeTaskWrapper, {backgroundColor: (notesMode || todosMode)? color:'#f2f3f4'}]}>
         <TextInput allowFontScaling={false} style={[styles.input, {backgroundColor: (notesMode || todosMode)? '#f2f3f464': 'white'}, {borderColor: (notesMode || todosMode)? '#f2f3f4':'#ededed'}, {color: (notesMode || todosMode)? 'white':'black'}]} blurOnSubmit={false} 
         placeholder={(!notesMode && !todosMode)?"What did you do?": (todosMode)?"What's your next todo?":"What's your next note?"} placeholderTextColor={(notesMode || todosMode)? '#f2f3f4':'#708090'}
-          onChangeText={text => setTask(text)} value={task} onSubmitEditing={() => { handleAddTask() }}   ref={inputRef}
+          onChangeText={text => setTask(text)} value={task} onSubmitEditing={() => { handleAddItem() }}   ref={inputRef}
           maxLength={140}
           />
-        <TouchableOpacity onPress={() => handleAddTask()}>
+        <TouchableOpacity onPress={() => handleAddItem()}>
           <View style={[styles.addButtonWrapper, { backgroundColor: (notesMode||todosMode)? 'white': color, shadowColor: color }]}>
             <Add style={{color: (notesMode || todosMode)? color: 'white'}} width='20' height='20'></Add>
           </View>
         </TouchableOpacity>
       </KeyboardAvoidingView>}
-      <RBSheet
-        ref={refRBSheet}
-        closeOnDragDown={false}
-        closeOnPressMask={true}
-        height={100}
-        customStyles={{
-          wrapper: {
-            backgroundColor: "transparent",
-
-          },
-          container: {
-            borderTopLeftRadius: 20,
-            borderTopRightRadius: 20,
-            backgroundColor: '#f2f3f4',
-            borderWidth: 1,
-            borderColor: color
-          },
-          draggableIcon: {
-            backgroundColor: "#000"
-          },
-        }}
-      >
-      <View style={{flex:1, flexDirection: 'row', alignItems:'center'}}>
-      <TouchableOpacity style={{marginLeft:5, borderRadius: 10, borderColor: 'white', borderWidth: 0, padding: 6, }} onPress={()=>{
-          deleteItem()
-        }}>
-        <Delete  width={27} height={27} color={color} />
-        </TouchableOpacity>
-        <TextInput allowFontScaling={false} style={[{ paddingVertical: 15, paddingHorizontal: 13, backgroundColor: '#FFF', marginVertical: 20, marginHorizontal: 10,
-    borderRadius: 60, borderWidth: 2, borderColor: color, width: '70%', fontFamily: 'Regular', fontSize: 12}]} blurOnSubmit={false} 
-        placeholderTextColor={'#708090'}
-          onChangeText={text => setRBText(text)} value={RBText} onSubmitEditing={() => { editItem() }}  
-          maxLength={15} 
-          />
-        <TouchableOpacity style={{marginLeft:5, borderRadius: 10, borderColor: 'white', borderWidth: 0, padding: 6, }} onPress={()=>{
-          editItem()
-        }}>
-        <Edit  width={32} height={32} color={color} />
-        </TouchableOpacity>
-        </View>
-      </RBSheet>
+      <EditItemModal refRBSheet={refRBSheet} RBText={RBText} setRBText={setRBText} color={color} deleteItem={deleteItem} editItem={editItem} />
     </View>
-   
   );
 }
 
 
+// Component rendering todolist
+const Todos = ({ type, todosList, refRBSheet, setRBTargetID, setRBText }) => {
 
+  const TextElement = ()=> {
+    if (type == 'do') {
+      return <Text allowFontScaling={false} style={{color: '#f2f3f4', fontSize: 27,  fontFamily:'SemiBold', marginVertical: 6}}>Do</Text>
+    }
+    else if (type == 'schedule') {
+      return <Text allowFontScaling={false} style={{color: '#f2f3f4', fontSize: 27,  fontFamily:'SemiBold', marginVertical: 6}}>Schedule</Text>
+    }
+    else if (type == 'delegate') {
+      return <Text allowFontScaling={false} style={{color: '#f2f3f4', fontSize: 27,  fontFamily:'SemiBold', marginVertical: 6}}>Delegate</Text>
+    }
+    else if (type == 'delete') {
+      return <Text allowFontScaling={false} style={{color: '#f2f3f4', fontSize: 27,  fontFamily:'SemiBold', marginVertical: 6}}>Delete</Text>
+    }
+    else if (type=='untitled'){
+      return <Text allowFontScaling={false} style={{color: '#f2f3f4', fontSize: 27,  fontFamily:'SemiBold', marginVertical: 6}}>Untitled</Text>
+    }
+    else {
+      return null
+    }
+  }
+
+  const TodoElement = ({todo}) => {
+  return todosList.filter((todo) => todo.type == type).map((todo, index) => {
+    return (
+      <>
+      <Pressable key={todo.id} style={({pressed})=>[{opacity:pressed ? 0.8 : 1}, {marginBottom: 5}]} onLongPress={() => { refRBSheet.current.open(); setRBTargetID(todo.id); setRBText(todo.text);}}>
+      <Task item={todo} text={todo.text} duration={0} actionObj={{}}  id={todo.id}/>
+      </Pressable>
+      </>
+      )
+  })
+}
+
+  if (todosList.filter((todo) => todo.type == type).length == 0) {
+    return null
+  }
+  return (
+    <>
+    <TextElement/>
+    <TodoElement/>
+    </>
+  )
+
+}
+
+const EditItemModal = ({ refRBSheet, RBText, setRBText, color, deleteItem, editItem }) => {
+
+  return (
+    <RBSheet
+      ref={refRBSheet}
+      closeOnDragDown={false}
+      closeOnPressMask={true}
+      height={100}
+      customStyles={{
+        wrapper: {
+          backgroundColor: 'transparent',
+        },
+        container: {
+          borderTopLeftRadius: 20,
+          borderTopRightRadius: 20,
+          backgroundColor: '#f2f3f4',
+          borderWidth: 1,
+          borderColor: color,
+        },
+        draggableIcon: {
+          backgroundColor: '#000',
+        },
+      }}
+    >
+      <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+        <TouchableOpacity
+          style={{
+            marginLeft: 5,
+            borderRadius: 10,
+            borderColor: 'white',
+            borderWidth: 0,
+            padding: 6,
+          }}
+          onPress={() => {
+            deleteItem();
+          }}
+        >
+          <Delete width={27} height={27} color={color} />
+        </TouchableOpacity>
+        <TextInput
+          allowFontScaling={false}
+          style={[
+            {
+              paddingVertical: 15,
+              paddingHorizontal: 13,
+              backgroundColor: '#FFF',
+              marginVertical: 20,
+              marginHorizontal: 10,
+              borderRadius: 60,
+              borderWidth: 2,
+              borderColor: color,
+              width: '70%',
+              fontFamily: 'Regular',
+              fontSize: 12,
+            },
+          ]}
+          blurOnSubmit={false}
+          placeholderTextColor={'#708090'}
+          onChangeText={(text) => setRBText(text)}
+          value={RBText}
+          onSubmitEditing={() => {
+            editItem();
+          }}
+          maxLength={140}
+        />
+        <TouchableOpacity
+          style={{
+            marginLeft: 5,
+            borderRadius: 10,
+            borderColor: 'white',
+            borderWidth: 0,
+            padding: 6,
+          }}
+          onPress={() => {
+            editItem();
+          }}
+        >
+          <Edit width={32} height={32} color={color} />
+        </TouchableOpacity>
+      </View>
+    </RBSheet>
+  );
+};
 
 const styles = StyleSheet.create({
 
